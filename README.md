@@ -1,7 +1,42 @@
-# Pheripherals-Drivers
-1. **Tested devices on STM32 F1/F4/F7/H7:**
+# Peripheral Drivers introduction
+1. **Supported device list:**
+	1. ADS_ADC
+		- ADS8887
+		- ADS8885
+		- ADS8883
+		- ADS8881
+		- ADS8866
+		- ADS8339
+		- ADS8864
+		- ADS8319
+		- ADS8862
+		- ADS8860
+		- ADS8867
+		- ADS8865
+		- ADS8318
+		- ADS8863
+		- ADS8861
+		- ADS9110
+	2. DF_SAR_ADC
+		- LTC2500-32
+		- LTC2508-32
+		- LTC2512-24
+		- LTC2380-24
+	3. EEPROM
+		- AT24C
+		- 24AA
+		- 24LC
+	4. ENC624J600
+	5. LTC26x1
+		- LTC2601
+		- LTC2611
+		- LTC2621
+2. **Tested devices (STM32 F1/F4/F7/H7 & nRF52832/nRF52833/nRF52840):**
     1. LTC2500-32
 	2. LTC2601
-	3. AT24C128/256
-	4. 24LC256
-	5. 24AA256
+	3. ADS8881
+	4. AT24C128/256
+	5. 24LC256
+	6. 24AA256
+ 
+# Usage
