@@ -65,11 +65,11 @@ uint8_t log_data[512];
 static volatile uint32_t tim2_counter = 0;
 
 static uint8_t randomWriteSize = 25;
-static uint8_t randomWriteData = 0x26;
-static uint8_t randomPageData  = 0xCE;
+static uint8_t randomWriteData = 0x15;
+static uint8_t randomPageData  = 0xAE;
 
-static uint16_t randomWriteAddr = 0x2000;
-static uint16_t randomPageAddr  = 0x2A80;
+static uint16_t randomWriteAddr = 0x2200;
+static uint16_t randomPageAddr  = 0x3000;
 
 static uint16_t dac_value = 37899;
 
@@ -145,7 +145,7 @@ static ADSADC_Def_t gADSADCDef_s =
 {
 		.spiHandle = ADS8881_SPIHandle,
 		.controlHandle = ADS8881_CtrlHandle,
-		.busyHandle = NULL
+		.delayHandle = NULL
 };
 
 static EEPROM_Def_t gEEPROMDef_s =
@@ -175,7 +175,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -204,19 +203,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
 
-  _25LC256_Init();
-
-  _25LC256_Run();
+//  _25LC256_Init();
+//
+//  _25LC256_Run();
 
 //  LTC250032_Init();
 //  LTC2601_Init();
-//  ADS8881_Init();
+  ADS8881_Init();
 //  AT24C256_Init();
 
 //  AT24C256_Run();
   /* USER CODE END 2 */
- 
- 
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -225,7 +222,7 @@ int main(void)
 //	  LTC2601_Run();
 //	  HAL_Delay(10);
 //	  LTC250032_Run();
-//	  ADS8881_Run();
+	  ADS8881_Run();
 
 	  HAL_Delay(50);
     /* USER CODE END WHILE */
@@ -375,7 +372,7 @@ DFADC_State_t LTC250032_CtrlHandle(DFADC_Control_Event_t locContEvent_en, uint32
 			break;
 		}
 
-		case CONTROL_DF_EVENT_DELAY:
+		case CONTROL_DF_EVENT_WAIT:
 		{
 			delay_5us(locSignal_u32);
 			break;
@@ -448,18 +445,13 @@ ADSADC_State_t ADS8881_CtrlHandle(ADSADC_Control_Event_t locContEvent_en, uint32
 			break;
 		}
 
-		case CONTROL_ADS_EVENT_3WIRE_BUSY_INDI:
-		{
-			break;
-		}
-
 		case CONTROL_ADS_EVENT_4WIRE_CONVST:
 		{
 			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, (locSignal_u32 == 0)? GPIO_PIN_RESET : GPIO_PIN_SET);
 			break;
 		}
 
-		case CONTROL_ADS_EVENT_4WIRE_BUSY_INDI:
+		case CONTROL_ADS_EVENT_4WIRE_DIN:
 		{
 			break;
 		}
@@ -568,7 +560,7 @@ static void ADS8881_Init()
 
 	locADSConfig_s.deviceType = ADS8881;
 	locADSConfig_s.refVoltage = 4.096;
-	locADSConfig_s.convTime   = 20 * (HAL_RCC_GetHCLKFreq() / 1000000);
+	locADSConfig_s.convTime   = 600 * (HAL_RCC_GetHCLKFreq() / 1000000);
 	locADSConfig_s.timeout    = 80 * (HAL_RCC_GetHCLKFreq() / 1000000);
 
 	gADSStatus_en = ADSADC_Init(&gADSADCDef_s);
@@ -638,7 +630,7 @@ static void ADS8881_Run()
 	gLastRawADCData_i32 = gRawADCData_i32;
 	CONV_18BITS_TO_INT32_RAW_DATA(gRawADCCBuffer_au8, &gRawADCData_i32);
 	ADSADC_ConvToVoltage(&gADSADCDef_s, gRawADCCBuffer_au8, &gVolt_f);
-
+	gVolt_i32 = gVolt_f * 100000;
 	SIMPLE_LOG_INFO("gADSStatus_en %d - Raw ADC %d - Diff %d - Votlage (x100k) %d\r\n",
 							gADSStatus_en,
 							gRawADCData_i32,

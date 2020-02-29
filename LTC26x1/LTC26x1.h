@@ -110,6 +110,7 @@ typedef struct
 /** DAC definition structure.  */
 typedef struct
 {
+	DAC_Chip_t				deviceType;
 	uint16_t				valueLSB;
 	uint32_t				timeout;
 	float					refVoltage;

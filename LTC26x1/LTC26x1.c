@@ -90,8 +90,9 @@ DAC_State_t DAC_Config(DAC_Def_t *locDAC_p, DAC_Config_t locDAC_Config_s)
 
 	locDAC_p->timeout 	 = locDAC_Config_s.timeout;
 	locDAC_p->refVoltage = locDAC_Config_s.refVoltage;
+	locDAC_p->deviceType = locDAC_Config_s.deviceType;
 
-	switch (locDAC_Config_s.deviceType)
+	switch (locDAC_p->deviceType)
 	{
 		case LTC2601:
 		{
@@ -156,8 +157,37 @@ DAC_State_t DAC_StartDAConversion(DAC_Def_t *locDAC_p,
 	 * to accommodate microprocessors which have a minimum word width of 16 bits (2 bytes).
 	 * */
 	locTxBuffer_au8[0] = locCommand_u8 << 4;
-	locTxBuffer_au8[1] = locDataToConv_u16 >> 8;
-	locTxBuffer_au8[2] = locDataToConv_u16;
+	switch (locDAC_p->deviceType)
+	{
+		case LTC2601:
+		{
+			/* Use all 16 bits of uint16_t */
+			locTxBuffer_au8[1] = locDataToConv_u16 >> 8;
+			locTxBuffer_au8[2] = locDataToConv_u16;
+			break;
+		}
+
+		case LTC2611:
+		{
+			/* Use only 14 bits LSB of uint16_t. Shift left 2 bits to avoid data missing.
+			 * The LTC2611 ignores 2 LSB. */
+			uint16_t temp = locDataToConv_u16 << 2;
+			locTxBuffer_au8[1] = temp >> 8;
+			locTxBuffer_au8[2] = temp;
+			break;
+		}
+
+		case LTC2621:
+		{
+			/* Use only 12 bits LSB of uint16_t. Shift left 4 bits to avoid data missing.
+			 * The LTC2621 ignores 4 LSB. */
+			uint16_t temp = locDataToConv_u16 << 4;
+			locTxBuffer_au8[1] = temp >> 8;
+			locTxBuffer_au8[2] = temp;
+			break;
+		}
+		default: break;
+	}
 
 	if (NULL != locDAC_p->spiHandle)
 	{

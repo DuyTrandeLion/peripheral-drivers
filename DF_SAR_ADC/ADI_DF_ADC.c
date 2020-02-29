@@ -47,6 +47,7 @@ static bool busyWait(DFADC_Def_t *locDFADC_p)
 		return false;
 	}
 
+	/* Should change to NOP() */
 	while (DFADC_DEVICE_BUSY == locDFADC_p->controlHandle(CONTROL_DF_EVENT_CHECK_BUSY, 0, NULL))
 	{
 		gTimeoutCounter_u32--;
@@ -340,9 +341,9 @@ DFADC_State_t DFADC_StartADConversion(DFADC_Def_t *locDFADC_p)
     	if (NULL != locDFADC_p->controlHandle)
     	{
     		locDFADC_p->controlHandle(CONTROL_DF_EVENT_SET_CLOCK, 1, NULL);
-    		locDFADC_p->controlHandle(CONTROL_DF_EVENT_DELAY, 1, NULL);
+    		locDFADC_p->controlHandle(CONTROL_DF_EVENT_WAIT, 1, NULL);
     		locDFADC_p->controlHandle(CONTROL_DF_EVENT_SET_CLOCK, 0, NULL);
-    		locDFADC_p->controlHandle(CONTROL_DF_EVENT_DELAY, 1, NULL);
+    		locDFADC_p->controlHandle(CONTROL_DF_EVENT_WAIT, 1, NULL);
     	}
     	else
     	{

@@ -34,32 +34,10 @@ extern "C" {
  * 							Private variables								*
  ****************************************************************************/
 
+
 /****************************************************************************
  * 							Private functions								*
  ****************************************************************************/
-static bool busyWait(ADSADC_Def_t *locADSADC_p)
-{
-	uint32_t gTimeoutCounter_u32 = locADSADC_p->timeout;
-
-	if ((NULL == locADSADC_p) ||
-		(NULL == locADSADC_p->controlHandle))
-	{
-		return false;
-	}
-
-	/* 3-wire or 4-wire communication with busy indicator have the same waiting method. */
-	while (ADSADC_DEVICE_BUSY == locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_BUSY_INDI, 0, NULL))
-	{
-		gTimeoutCounter_u32--;
-
-		if (0 == gTimeoutCounter_u32)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
 
 /****************************************************************************
  * 							Public functions								*
@@ -145,9 +123,16 @@ ADSADC_State_t ADSADC_StartADConversion(ADSADC_Def_t *locADSADC_p)
 			locConvTimeout_u32 = locADSADC_p->convTime;
 
 			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 1, NULL);
-			while (locConvTimeout_u32 > 0)
+			if (NULL == locADSADC_p->delayHandle)
 			{
-				locConvTimeout_u32--;
+				while (locConvTimeout_u32 > 0)
+				{
+					locConvTimeout_u32--;
+				}
+			}
+			else
+			{
+				locADSADC_p->delayHandle(locConvTimeout_u32);
 			}
 			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
 			break;
@@ -155,13 +140,26 @@ ADSADC_State_t ADSADC_StartADConversion(ADSADC_Def_t *locADSADC_p)
 
 		case SPI_4WIRE:
 		{
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 1, NULL);
+			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_CONVST, 1, NULL);
+			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_DIN, 1, NULL);
+			if (NULL == locADSADC_p->delayHandle)
+			{
+				while (locConvTimeout_u32 > 0)
+				{
+					locConvTimeout_u32--;
+				}
+			}
+			else
+			{
+				locADSADC_p->delayHandle(locConvTimeout_u32);
+			}
+			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_DIN, 0, NULL);
 			break;
 		}
 
 		case SPI_DAISY_CHAIN:
 		{
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 1, NULL);
+			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_CONVST, 1, NULL);
 			break;
 		}
 

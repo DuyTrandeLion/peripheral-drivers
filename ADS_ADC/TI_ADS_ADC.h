@@ -88,10 +88,8 @@ typedef enum
 typedef enum
 {
 	CONTROL_ADS_EVENT_3WIRE_CONVST			= 0x00,
-	CONTROL_ADS_EVENT_3WIRE_BUSY_INDI		= 0x01,
-	CONTROL_ADS_EVENT_4WIRE_CONVST			= 0x02,
-	CONTROL_ADS_EVENT_4WIRE_BUSY_INDI		= 0x03,
-	CONTROL_ADS_EVENT_DAISY_CHAIN_BUSY_INDI	= 0x04
+	CONTROL_ADS_EVENT_4WIRE_CONVST			= 0x01,
+	CONTROL_ADS_EVENT_4WIRE_DIN				= 0x02
 } ADSADC_Control_Event_t;
 
 
@@ -127,9 +125,10 @@ typedef ADSADC_State_t (*ADSADC_Control_Handle_t)(ADSADC_Control_Event_t, uint32
 /**
  * Busy time counting handle callback.
  *
- * @retval true 	If the device is busy
+ * @param[in] uint32_t	Delay time
+ * @retval true 		If the device is busy
  */
-typedef bool (*ADSADC_BusyWait_Handle_t)(void);
+typedef bool (*ADSADC_Delay_Handle_t)(uint32_t);
 
 
 /** ADC chip configuration structure.  */
@@ -151,7 +150,7 @@ typedef struct
 	float						refVoltage;
 	ADSADC_SPI_Handle_t 		const spiHandle;
 	ADSADC_Control_Handle_t 	const controlHandle;
-	ADSADC_BusyWait_Handle_t 	const busyHandle;
+	ADSADC_Delay_Handle_t 		const delayHandle;
 } ADSADC_Def_t;
 
 
@@ -234,8 +233,6 @@ ADSADC_State_t ADSADC_ReadDistributedData(ADSADC_Def_t *locADSADC_p, uint8_t *lo
  * @param[out]	locReadData			Pointer to the digital output buffer.
  *
  * @retval ADSADC_OK If the notification was sent successfully. Otherwise, an error code is returned.
- *
- * @note This functions only returns the data when DRL is low.
  *
  * @attention Function ADSADC_StartADConversion should be called first to start the conversion.
  */
