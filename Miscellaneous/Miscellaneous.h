@@ -48,12 +48,16 @@ extern "C" {
 
 #define MERGE_4BYTES(buffer, value)     ((value) = (((buffer[0]) << 24) & 0xFFFFFFFF));   \
                                         ((value) |= (((buffer[1]) << 16) & 0xFFFFFFFF));  \
-                                        ((value) |= (((buffer[2]) << 8) & 0xFFFFFFFF));  \
+                                        ((value) |= (((buffer[2]) << 8) & 0xFFFFFFFF));   \
                                         ((value) |= ((buffer[3]) & 0xFFFFFFFF))
+
+#define PARSE_2BYTES(value, high_byte, low_byte)    ((high_byte) = (((value) >> 8) & 0xFF));  \
+                                                    ((low_byte) = ((value) & 0xFF)))
+
 
 //#define ERROR_CHECK(_function_)         while (HAL_OK != _function_) { }
 
-int8_t hex2int(char *prt, unit8_t *value);
+int8_t hex2int(char *prt, uint8_t *value);
 
 #ifdef __cplusplus
 }

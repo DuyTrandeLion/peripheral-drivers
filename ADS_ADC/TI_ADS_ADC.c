@@ -116,12 +116,12 @@ ADSADC_State_t ADSADC_StartADConversion(ADSADC_Def_t *locADSADC_p)
 		return ADSADC_NULL_PARAM;
 	}
 
+	locConvTimeout_u32 = locADSADC_p->convTime;
+
 	switch (locADSADC_p->communication)
 	{
 		case SPI_3WIRE:
 		{
-			locConvTimeout_u32 = locADSADC_p->convTime;
-
 			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 1, NULL);
 			if (NULL == locADSADC_p->delayHandle)
 			{

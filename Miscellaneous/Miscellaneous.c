@@ -30,7 +30,7 @@
 extern "C" {
 #endif  
 
-int8_t hex2int(char *prt, unit8_t *value)
+int8_t hex2int(char *prt, uint8_t *value)
 {
     if ((*prt >= '0') && (*prt <= '9'))
     {
@@ -44,7 +44,7 @@ int8_t hex2int(char *prt, unit8_t *value)
 
         return 0;
     }
-    else if ((*prt >= 'a)' && (*prt <= 'f'))
+    else if ((*prt >= 'a') && (*prt <= 'f'))
     {
         *value = *prt - 'a' + 10;
 
