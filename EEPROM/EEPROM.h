@@ -78,11 +78,11 @@ typedef enum
 
 
 /**
- * SPI event callback type.
+ * Communication event callback type.
  *
  * This function is called when there is SPI communication.
  *
- * @param[in] EEPROM_Event_t 	SPI Event type.
+ * @param[in] EEPROM_Event_t 	SPI/I2C Event type.
  * @param[in] uint16_t			Device address.
  * @param[in] uint16_t			Data address.
  * @param[in] uint8_t *			Pointer to data buffer.

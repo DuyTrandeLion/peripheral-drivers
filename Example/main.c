@@ -64,6 +64,8 @@ uint8_t log_data[512];
 /* USER CODE BEGIN PV */
 static volatile uint32_t tim2_counter = 0;
 
+static bool spiReady = true;
+
 static uint8_t randomWriteSize = 25;
 static uint8_t randomWriteData = 0x15;
 static uint8_t randomPageData  = 0xAE;
@@ -422,7 +424,7 @@ ADSADC_State_t ADS8881_SPIHandle(ADSADC_SPI_Event_t locSPIEvent_en, uint8_t *loc
 	{
 		case SPI_ADS_EVENT_RECEIVE:
 		{
-			locRet = HAL_SPI_Receive(&hspi1, locData_pu8, locDataSize_u16, 100);
+			locRet = HAL_SPI_Receive_IT(&hspi1, locData_pu8, locDataSize_u16);
 			break;
 		}
 
@@ -441,7 +443,23 @@ ADSADC_State_t ADS8881_CtrlHandle(ADSADC_Control_Event_t locContEvent_en, uint32
 	{
 		case CONTROL_ADS_EVENT_3WIRE_CONVST:
 		{
-			HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, (locSignal_u32 == 0)? GPIO_PIN_RESET : GPIO_PIN_SET);
+			if (0 == locSignal_u32)
+			{
+				if (false == spiReady)
+				{
+					break;
+				}
+				spiReady = false;
+				HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+			}
+			else
+			{
+				while (false == spiReady)
+				{
+
+				}
+				HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+			}
 			break;
 		}
 
@@ -713,6 +731,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if (TIM2 == htim->Instance)
 	{
 		tim2_counter++;
+	}
+}
+
+
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+
+}
+
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	if (hspi->Instance == hspi1.Instance)
+	{
+		spiReady = true;
 	}
 }
 /* USER CODE END 4 */

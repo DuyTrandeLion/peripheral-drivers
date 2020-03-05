@@ -52,7 +52,7 @@ extern "C" {
                                         ((value) |= ((buffer[3]) & 0xFFFFFFFF))
 
 #define PARSE_2BYTES(value, high_byte, low_byte)    ((high_byte) = (((value) >> 8) & 0xFF));  \
-                                                    ((low_byte) = ((value) & 0xFF)))
+                                                    ((low_byte) = ((value) & 0xFF))
 
 
 //#define ERROR_CHECK(_function_)         while (HAL_OK != _function_) { }
