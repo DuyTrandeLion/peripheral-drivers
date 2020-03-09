@@ -54,18 +54,10 @@
     ```
 2. Add the include path in your project.
 3. Add library files in your project.
-4. If you use Ublox_GPS_GNSS library: 
-In file **mimea.h**, comment function ```int minmea_gettime(struct timespec *ts, const struct minmea_date *date, const struct minmea_time *time_);```.
-In file **mimea.c**, function ```bool minmea_check(const char *sentence, bool strict)```, comment these lines:
-    ```C
-    if (checksum != expected)
-        return false;
-    ```
+4. If you use Ublox_GPS_GNSS library, also include ```Ublox_GPS_GNSS\gps-nmea-parser\gps_nmea_parser\src\include``` in include path.
 # Limitations
 1. Ublox GNSS:
-    - Only a handful of frames is supported right now.
-    - There's no support for omitting parts of the library from building. As a workaround, use the -ffunction-sections -Wl,--gc-sections linker flags (or equivalent) to remove the unused functions (parsers) from the final image.
-    - Some systems lack timegm. On these systems, the recommended course of action is to build with -Dtimegm=mktime which will work correctly as long the system runs in the default UTC timezone.
+    - Not all functions and NMEA protocols are supported.
 
 # Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -28,17 +28,19 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "minmea/minmea.h"
+#include "gps/gps.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif  
 
+
 #define UBXGNSS_UART_INTERFACE      (0)
 #define UBXGNSS_I2C_INTERFACE       (1)
 #define UBXGNSS_SPI_INTERFACE       (2)
 
-#define UBXGNSS_NMEA_MAX_LENGTH     MINMEA_MAX_LENGTH
+#define UBXGNSS_NMEA_MAX_LENGTH     (1024)
+
 
 typedef enum
 {
@@ -70,6 +72,49 @@ typedef enum
     I2C_UBX_EVENT_ABORT_TRANSMIT     = 0x05,
     I2C_UBX_EVENT_ABORT_RECEIVE      = 0x06
 } UBXGNSS_Comm_Event_t;
+
+
+#define UBXGNSS_IS_DATA_VALID(UBX_Hdl)    ((UBX_Hdl).gps.is_valid)
+
+
+#define UBXGNSS_GET_LATITUDE(UBX_Hdl)     ((UBX_Hdl).gps.latitude)
+
+
+#define UBXGNSS_GET_LONGITUDE(UBX_Hdl)      ((UBX_Hdl).gps.longitude)
+
+
+#define UBXGNSS_GET_ALTITUDE(UBX_Hdl)       ((UBX_Hdl).gps.altitude)
+
+
+#define UBXGNSS_GET_SATS_IN_USE(UBX_Hdl)    ((UBX_Hdl).gps.sats_in_use)
+
+
+#define UBXGNSS_GET_SATS_IN_VIEW(UBX_Hdl)   ((UBX_Hdl).gps.sats_in_view)
+
+
+#define UBXGNSS_GET_TIME(UBX_Hdl, h, m, s)  ((h) = (UBX_Hdl).gps.hours);    \
+                                            ((m) = (UBX_Hdl).gps.minutes);  \
+                                            ((s) = (UBX_Hdl).gps.seconds)
+
+
+#define UBXGNNSS_GET_DATE(UBX_Hdl, y, m, d) ((y) = (UBX_Hdl).gps.year);   \
+                                            ((m) = (UBX_Hdl).gps.month);  \
+                                            ((h) = (UBX_Hdl).gps.date)
+
+
+#define UBXGNSS_GET_INSTANT_SPEED(UBX_Hdl)  ((UBX_Hdl).gps.speed)
+
+
+#define UBXGNSS_GET_H_DILUTION(UBX_Hdl)     ((UBX_Hdl).gps.dop_h)
+
+
+#define UBXGNSS_GET_P_DILUTION(UBX_Hdl)     ((UBX_Hdl).gps.dop_p)
+
+
+#define UBXGNSS_GET_V_DILUTION(UBX_Hdl)     ((UBX_Hdl).gps.dop_v)
+
+
+#define UBXGNSS_GET_COG(UBX_Hdl)            ((UBX_Hdl).gps.coarse)
 
 
 /**
@@ -105,6 +150,7 @@ typedef struct
         uint8_t                 address;
         uint8_t                 nmeaDataSource;
 	uint32_t		timeout;
+        gps_t                   gps;
 	UBXGNSS_Comm_Handle_t 	const commHandle;
 	UBXGNSS_Delay_Handle_t 	const delayHandle;
 } UBXGNSS_Def_t;
@@ -135,7 +181,7 @@ void UBXGNSS_DeInit(UBXGNSS_Def_t *locUBXGNSS_p);
  *
  * @note        This function should be put in the interrupt handler or in the loop.
  */
-void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t locDataSource, uint8_t *locCommData_p, uint16_t locCommDataSize_u16);
+void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locCommData_p, uint16_t locCommDataSize_u16);
 
 
 #ifdef __cplusplus

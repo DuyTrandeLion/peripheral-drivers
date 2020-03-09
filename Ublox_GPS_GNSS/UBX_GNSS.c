@@ -27,16 +27,9 @@
 #include "UBX_GNSS.h"
 #include "Miscellaneous.h"
 
-#include "minmea/minmea.h"
+#include "gps/gps.h"
 
-struct minmea_sentence_rmc rmc_frame;
-struct minmea_sentence_gga gga_frame;
-struct minmea_sentence_gsa gsa_frame;
-struct minmea_sentence_gll gll_frame;
-struct minmea_sentence_gst gst_frame;
-struct minmea_sentence_gsv gsv_frame;
-struct minmea_sentence_vtg vtg_frame;
-struct minmea_sentence_zda zda_frame;
+//gps_t hgps;
 
 
 UBXGNSS_State_t UBXGNSS_Init(UBXGNSS_Def_t *locUBXGNSS_p)
@@ -73,6 +66,9 @@ UBXGNSS_State_t UBXGNSS_Init(UBXGNSS_Def_t *locUBXGNSS_p)
 
     }
 
+    /* Init GPS */
+    gps_init(&(locUBXGNSS_p->gps));
+//    gps_init(&hgps);
     return UBXGNSS_OK;
 }
 
@@ -82,9 +78,8 @@ void UBXGNSS_DeInit(UBXGNSS_Def_t *locUBXGNSS_p)
 
 }
 
-uint16_t test_data;
-int32_t lati, longi;
-void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t locDataSource, uint8_t *locCommData_p, uint16_t locCommDataSize_u16)
+
+void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locCommData_p, uint16_t locCommDataSize_u16)
 {
     uint16_t len = strlen(locCommData_p);
 
@@ -97,83 +92,9 @@ void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t locDataSource, uin
                 ('\n' == locCommData_p[len - 1])
                )
             {
-                /* Process string */
-                switch (minmea_sentence_id(locCommData_p, false))
-                {
-                    case MINMEA_SENTENCE_RMC:
-                    {
-                        if (true == minmea_parse_rmc(&rmc_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-                    
-                    case MINMEA_SENTENCE_GGA:
-                    {
-                        if (true == minmea_parse_gga(&gga_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    case MINMEA_SENTENCE_GSA:
-                    {
-                        if (true == minmea_parse_gsa(&gsa_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    case MINMEA_SENTENCE_GLL:
-                    {
-                        if (true == minmea_parse_gll(&gll_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    case MINMEA_SENTENCE_GST:
-                    {
-                        if (true == minmea_parse_gst(&gst_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    case MINMEA_SENTENCE_GSV:
-                    {
-                        if (true == minmea_parse_gsv(&gsv_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    case MINMEA_SENTENCE_VTG:
-                    {
-                        if (true == minmea_parse_vtg(&vtg_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    case MINMEA_SENTENCE_ZDA:
-                    {
-                        if (true == minmea_parse_zda(&zda_frame, locCommData_p))
-                        {
-
-                        }
-                        break;
-                    }
-
-                    default: break;
-                }
+                /* Process all input data */
+                gps_process(&(locUBXGNSS_p->gps), locCommData_p, locCommDataSize_u16);
+//                gps_process(&hgps, locCommData_p, locCommDataSize_u16);
             }
             break;
         }
