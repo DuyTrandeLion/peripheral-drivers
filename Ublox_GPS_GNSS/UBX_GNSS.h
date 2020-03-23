@@ -35,11 +35,14 @@ extern "C" {
 #endif  
 
 
-#define UBXGNSS_UART_INTERFACE      (0)
-#define UBXGNSS_I2C_INTERFACE       (1)
-#define UBXGNSS_SPI_INTERFACE       (2)
+#define UBXGNSS_UART_INTERFACE      (0x01)
+#define UBXGNSS_I2C_INTERFACE       (0x01 << 1)
+#define UBXGNSS_SPI_INTERFACE       (0x01 << 2)
 
-#define UBXGNSS_NMEA_MAX_LENGTH     (1024)
+#define UBXGNSS_NMEA_MAX_LENGTH     (1536)
+#define UBXGNSS_UBX_MAX_LENGHTH     (256)
+
+#define UBX_MSG_HEADER_LENGHTH      (6)
 
 
 typedef enum
@@ -47,6 +50,7 @@ typedef enum
     UBXGNSS_OK = 0,
     UBXGNSS_FAIL,
     UBXGNSS_CRC_FAIL,
+    UBXGNSS_INVALID_MSG,
     UBXGNSS_TIMEOUT,
     UBXGNSS_COMMAND_UNKNOWN,
     UBXGNSS_OUT_OF_RANGE,
@@ -58,7 +62,9 @@ typedef enum
     UBXGNSS_HW_ERR,
     UBXGNSS_DATA_SENT,
     UBXGNSS_DATA_RECEIVED,
-    UBXGNSS_I2C_COMM_FAILURE
+    UBXGNSS_DATA_NOT_AVAILABLE,
+    UBXGNSS_I2C_COMM_FAILURE,
+    UBXGNSS_SPI_COMM_FAILURE
 } UBXGNSS_State_t;
 
 
@@ -70,8 +76,27 @@ typedef enum
     I2C_UBX_EVENT_TRANSMIT           = 0x03,
     I2C_UBX_EVENT_RECEIVE            = 0x04,
     I2C_UBX_EVENT_ABORT_TRANSMIT     = 0x05,
-    I2C_UBX_EVENT_ABORT_RECEIVE      = 0x06
+    I2C_UBX_EVENT_ABORT_RECEIVE      = 0x06,
+    SPI_UBX_EVENT_TRANSMIT           = 0x07,
+    SPI_UBX_EVENT_RECEIVE            = 0x08,
+    SPI_UBX_EVENT_ABORT_TRANSMIT     = 0x09,
+    SPI_UBX_EVENT_ABORT_RECEIVE      = 0x0A
 } UBXGNSS_Comm_Event_t;
+
+typedef enum
+{
+    UBX_ACK = 0x05,
+    UBX_CFG = 0x06,
+    UBX_INF = 0x04,
+    UBX_LOG = 0x21,
+    UBX_MGA = 0x13,
+    UBX_MON = 0x0A,
+    UBX_NAV = 0x01,
+    UBX_RXM = 0x02,
+    UBX_SEC = 0x27,
+    UBX_TIM = 0x0D,
+    UBX_UPD = 0x09
+} UBXMESSAGE_t;
 
 
 #define UBXGNSS_IS_DATA_VALID(UBX_Hdl)    ((UBX_Hdl).gps.is_valid)
@@ -97,12 +122,41 @@ typedef enum
                                             ((s) = (UBX_Hdl).gps.seconds)
 
 
-#define UBXGNNSS_GET_DATE(UBX_Hdl, y, m, d) ((y) = (UBX_Hdl).gps.year);   \
+#define UBXGNSS_GET_DATE(UBX_Hdl, y, m, d)  ((y) = (UBX_Hdl).gps.year);   \
                                             ((m) = (UBX_Hdl).gps.month);  \
-                                            ((h) = (UBX_Hdl).gps.date)
+                                            ((d) = (UBX_Hdl).gps.date)
+
+#define UBXGNSS_GET_TIME_TO_FIRST_FIX(UBX_Hdl)  ((UBX_Hdl).timeToFirstFix)
 
 
-#define UBXGNSS_GET_INSTANT_SPEED(UBX_Hdl)  ((UBX_Hdl).gps.speed)
+/**
+ * \brief           List of optional speed transformation from GPS values (in knots)
+ */
+//typedef enum {
+//    /* Metric values */
+//    gps_speed_kps,                              /*!< Kilometers per second */
+//    gps_speed_kph,                              /*!< Kilometers per hour */
+//    gps_speed_mps,                              /*!< Meters per second */
+//    gps_speed_mpm,                              /*!< Meters per minute */
+//
+//    /* Imperial values */
+//    gps_speed_mips,                             /*!< Miles per second */
+//    gps_speed_mph,                              /*!< Miles per hour */
+//    gps_speed_fps,                              /*!< Foots per second */
+//    gps_speed_fpm,                              /*!< Foots per minute */
+//
+//    /* Optimized for runners/joggers */
+//    gps_speed_mpk,                              /*!< Minutes per kilometer */
+//    gps_speed_spk,                              /*!< Seconds per kilometer */
+//    gps_speed_sp100m,                           /*!< Seconds per 100 meters */
+//    gps_speed_mipm,                             /*!< Minutes per mile */
+//    gps_speed_spm,                              /*!< Seconds per mile */
+//    gps_speed_sp100y,                           /*!< Seconds per 100 yards */
+//
+//    /* Nautical values */
+//    gps_speed_smph,                             /*!< Sea miles per hour */
+//} gps_speed_t;
+#define UBXGNSS_GET_INSTANT_SPEED(UBX_Hdl, ts)  (gps_to_speed((UBX_Hdl).gps.speed, (ts)))
 
 
 #define UBXGNSS_GET_H_DILUTION(UBX_Hdl)     ((UBX_Hdl).gps.dop_h)
@@ -131,7 +185,12 @@ typedef enum
  *
  * @retval UBXGNSS_OK If the notification was sent successfully. Otherwise, an error code is returned.
  */
-typedef UBXGNSS_State_t (*UBXGNSS_Comm_Handle_t)(UBXGNSS_Comm_Event_t, uint16_t, uint16_t, uint8_t *, uint16_t, void *);
+typedef UBXGNSS_State_t (*UBXGNSS_Comm_Handle_t)(UBXGNSS_Comm_Event_t,
+                                                 uint16_t locDeviceAddress_u16,
+                                                 uint16_t locRegisterAddress_u16, 
+                                                 uint8_t *locCommData_p8, 
+                                                 uint16_t locCommDataSize_u16, 
+                                                 void *locContext_p);
 
 
 /**
@@ -150,6 +209,7 @@ typedef struct
         uint8_t                 address;
         uint8_t                 nmeaDataSource;
 	uint32_t		timeout;
+        uint32_t                timeToFirstFix;
         gps_t                   gps;
 	UBXGNSS_Comm_Handle_t 	const commHandle;
 	UBXGNSS_Delay_Handle_t 	const delayHandle;
@@ -183,6 +243,13 @@ void UBXGNSS_DeInit(UBXGNSS_Def_t *locUBXGNSS_p);
  */
 void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locCommData_p, uint16_t locCommDataSize_u16);
 
+
+UBXGNSS_State_t UBXGNSS_GetUBXMessage(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locMsg_p, uint16_t *locReadMsgSize_p);
+
+
+UBXGNSS_State_t UBXGNSS_ProcessUBXMsg(UBXGNSS_Def_t *locUBXGNSS_p, 
+                                      uint8_t *locMsg_p, 
+                                      uint16_t locMsgLen_u16);
 
 #ifdef __cplusplus
 }

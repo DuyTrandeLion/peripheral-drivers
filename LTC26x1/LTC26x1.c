@@ -186,6 +186,7 @@ DAC_State_t DAC_StartDAConversion(DAC_Def_t *locDAC_p,
 			locTxBuffer_au8[2] = temp;
 			break;
 		}
+
 		default: break;
 	}
 

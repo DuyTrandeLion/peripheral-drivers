@@ -37,9 +37,13 @@ extern "C" {
 
 #define ABSOLUTE(value)                 ((value) >= 0.0)? (value) : ((-1.0) * (value)) 
 
+#ifndef MAX
 #define MAX(value1, value2)             ((value1) >= (value2))? (value1) : (value2)
+#endif
 
+#ifndef MIN
 #define MIN(value1, value2)             ((value1) < (value2))? (value1) : (value2)
+#endif
 
 #define CLEAR_BUFFER(buffer)		(memset(buffer, 0, SIZE(buffer)))
 
