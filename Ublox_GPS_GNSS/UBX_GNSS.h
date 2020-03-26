@@ -101,6 +101,10 @@ typedef enum
 
 #define UBXGNSS_IS_DATA_VALID(UBX_Hdl)    ((UBX_Hdl).gps.is_valid)
 
+#define UBXGNSS_GET_FIX(UBX_Hdl)          ((UBX_Hdl).gps.fix)
+
+#define UBXGNSS_GET_FIX_MODE(UBX_Hdl)     ((UBX_Hdl).gps.fix_mode)
+
 
 #define UBXGNSS_GET_LATITUDE(UBX_Hdl)     ((UBX_Hdl).gps.latitude)
 

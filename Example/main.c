@@ -43,6 +43,24 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#define USE_LTC_ADC		1
+
+#define USE_LTC_DAC		1
+
+#define USE_ADS_ADC		0
+
+#define USE_I2C_EEPROM	0
+
+#define USE_SPI_EPRROM	0
+
+#if ((USE_I2C_EEPROM == 1) && (USE_SPI_EPRROM == 1))
+#error "Cannot use I2C EEPROM and SPI EEPROM at the same time"
+#endif
+
+#define USE_SPI_ETHERNET	0
+
+#define USE_NEO_GPS		0
+
 uint8_t log_data[512];
 
 #define SIMPLE_LOG_INFO(fmt, ...)												\
@@ -66,6 +84,7 @@ static volatile uint32_t tim2_counter = 0;
 
 static bool spiReady = true;
 
+#if ((USE_I2C_EEPROM == 1) || (USE_SPI_EEPROM == 1))
 static uint8_t randomWriteSize = 25;
 static uint8_t randomWriteData = 0x15;
 static uint8_t randomPageData  = 0xAE;
@@ -73,14 +92,18 @@ static uint8_t randomPageData  = 0xAE;
 static uint16_t randomWriteAddr = 0x2200;
 static uint16_t randomPageAddr  = 0x3000;
 
-static uint16_t dac_value = 37899;
-
 static uint8_t writeData[32] = {0};
 static uint8_t readData[32] = {0};
 
 static uint8_t pageWriteData[64] = {0};
 static uint8_t pageReadData[64]  = {0};
+#endif
 
+#if USE_LTC_DAC
+static uint16_t dac_value = 61440;
+#endif
+
+#if ((USE_LTC_ADC == 1) || (USE_ADS_ADC == 1))
 static uint8_t gRawADCCBuffer_au8[4];
 
 static int32_t gLastRawADCData_i32;
@@ -88,79 +111,121 @@ static int32_t gRawADCData_i32;
 static int32_t gVolt_i32;
 
 static float gVolt_f;
+#endif
 
+#if USE_LTC_ADC
 static DFADC_State_t  gLTCStatus_en;
+#endif
+
+#if USE_LTC_DAC
 static DAC_State_t    gLTCDACStatus_en;
+#endif
+
+#if USE_ADS_ADC
 static ADSADC_State_t gADSStatus_en;
+#endif
+
+#if ((USE_I2C_EEPROM == 1) || (USE_SPI_EEPROM == 1))
 static EEPROM_State_t gEEPROMStatus_en;
+#endif
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+#if USE_LTC_ADC
 DFADC_State_t LTC250032_SPIHandle(DFADC_SPI_Event_t locSPIEvent_en, uint8_t *locData_pu8, uint16_t locDataSize_u16, void *locContext_p);
 DFADC_State_t LTC250032_CtrlHandle(DFADC_Control_Event_t locContEvent_en, uint32_t locSignal_u32, void *locContext_p);
+#endif
+
+#if USE_LTC_DAC
 DAC_State_t LTC2601_SPIHandle(DAC_SPI_Event_t locSPIEvent_en, uint8_t *locData_pu8, uint16_t locDataSize_u16, void *locContext_p);
+#endif
+
+#if USE_ADS_ADC
 ADSADC_State_t ADS8881_SPIHandle(ADSADC_SPI_Event_t locSPIEvent_en, uint8_t *locData_pu8, uint16_t locDataSize_u16, void *locContext_p);
 ADSADC_State_t ADS8881_CtrlHandle(ADSADC_Control_Event_t locContEvent_en, uint32_t locSignal_u32, void *locContext_p);
+#endif
 
+#if ((USE_I2C_EEPROM == 1) || (USE_SPI_EEPROM == 1))
 EEPROM_State_t MCHP_EEPHandle(EEPROM_Event_t locEEPEvent_en,
 									uint16_t locDeviceAddress_u16,
 									uint16_t locMemAddress_u16,
 									uint8_t *locData_p8,
 									uint16_t locDataSize_u16,
 									void * locContext_p);
+#endif
 
+#if USE_LTC_ADC
 static void LTC250032_Init();
 static void LTC250032_Run();
+#endif
 
+#if USE_LTC_DAC
 static void LTC2601_Init();
 static void LTC2601_Run();
+#endif
 
+#if USE_ADS_ADC
 static void ADS8881_Init();
 static void ADS8881_Run();
+#endif
 
+#if USE_I2C_EEPROM
 static void AT24C256_Init();
 static void AT24C256_Run();
+#endif
 
+#if USE_SPI_EEPROM
 static void _25LC256_Init();
 static void _25LC256_Run();
+#endif
 
 static void delay_5us(uint32_t delayTime);
 __STATIC_INLINE void DWT_Delay_us(volatile uint32_t microseconds);
 
+#if USE_LTC_ADC
 static DFADC_Def_t gLTCADCDef_s =
 {
 		.spiHandle = LTC250032_SPIHandle,
 		.controlHandle = LTC250032_CtrlHandle,
 		.busyHandle = NULL
 };
+#endif
 
+#if USE_LTC_DAC
 static DAC_Def_t gLTCDACDef_s =
 {
 		.spiHandle = LTC2601_SPIHandle,
 		.busyHandle = NULL
 };
+#endif
 
+#if USE_ADS_ADC
 static ADSADC_Def_t gADSADCDef_s =
 {
 		.spiHandle = ADS8881_SPIHandle,
 		.controlHandle = ADS8881_CtrlHandle,
 		.delayHandle = NULL
 };
+#endif
 
+#if USE_I2C_EEPROM
 static EEPROM_Def_t gEEPROMDef_s =
 {
 		.commHandle = MCHP_EEPHandle,
 		.busyHandle = NULL
 };
+#endif
 
+#if USE_SPI_EEPROM
 static EEPROM_Def_t gSPIEEPROMDef_s =
 {
 		.commHandle = MCHP_EEPHandle,
 		.busyHandle = NULL
 };
+#endif
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -205,26 +270,47 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
 
-//  _25LC256_Init();
-//
-//  _25LC256_Run();
+#if USE_SPI_EEPROM
+  _25LC256_Init();
 
-//  LTC250032_Init();
-//  LTC2601_Init();
+  _25LC256_Run();
+#endif
+
+#if USE_LTC_ADC
+  LTC250032_Init();
+#endif
+
+#if USE_LTC_DAC
+  LTC2601_Init();
+#endif
+
+#if USE_ADS_ADC
   ADS8881_Init();
-//  AT24C256_Init();
+#endif
 
-//  AT24C256_Run();
+#if USE_I2C_EEPROM
+  AT24C256_Init();
+
+  AT24C256_Run();
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  LTC2601_Run();
-//	  HAL_Delay(10);
-//	  LTC250032_Run();
+#if USE_LTC_DAC
+	  LTC2601_Run();
+	  HAL_Delay(5);
+#endif
+
+#if USE_LTC_ADC
+	  LTC250032_Run();
+#endif
+
+#if USE_ADS_ADC
 	  ADS8881_Run();
+#endif
 
 	  HAL_Delay(50);
     /* USER CODE END WHILE */
@@ -254,7 +340,7 @@ void SystemClock_Config(void)
   /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;
@@ -296,6 +382,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+#if USE_LTC_ADC
 DFADC_State_t LTC250032_SPIHandle(DFADC_SPI_Event_t locSPIEvent_en, uint8_t *locData_pu8, uint16_t locDataSize_u16, void *locContext_p)
 {
 	DFADC_State_t locRet = HAL_OK;
@@ -385,8 +472,10 @@ DFADC_State_t LTC250032_CtrlHandle(DFADC_Control_Event_t locContEvent_en, uint32
 
 	return locRet;
 }
+#endif
 
 
+#if USE_LTC_DAC
 DAC_State_t LTC2601_SPIHandle(DAC_SPI_Event_t locSPIEvent_en, uint8_t *locData_pu8, uint16_t locDataSize_u16, void *locContext_p)
 {
 	DAC_State_t locRet = HAL_OK;
@@ -414,8 +503,10 @@ DAC_State_t LTC2601_SPIHandle(DAC_SPI_Event_t locSPIEvent_en, uint8_t *locData_p
 
 	return locRet;
 }
+#endif
 
 
+#if USE_ADS_ADC
 ADSADC_State_t ADS8881_SPIHandle(ADSADC_SPI_Event_t locSPIEvent_en, uint8_t *locData_pu8, uint16_t locDataSize_u16, void *locContext_p)
 {
 	ADSADC_State_t locRet = ADSADC_OK;
@@ -479,8 +570,10 @@ ADSADC_State_t ADS8881_CtrlHandle(ADSADC_Control_Event_t locContEvent_en, uint32
 
 	return locRet;
 }
+#endif
 
 
+#if ((USE_I2C_EEPROM == 1) || (USE_SPI_EEPROM == 1))
 EEPROM_State_t MCHP_EEPHandle(EEPROM_Event_t locEEPEvent_en,
 									uint16_t locDeviceAddress_u16,
 									uint16_t locMemAddress_u16,
@@ -533,8 +626,10 @@ EEPROM_State_t MCHP_EEPHandle(EEPROM_Event_t locEEPEvent_en,
 
 	return locRet;
 }
+#endif
 
 
+#if USE_LTC_ADC
 static void LTC250032_Init()
 {
 	DFADC_Config_t locLTCConfig_s;
@@ -554,8 +649,10 @@ static void LTC250032_Init()
 	gLTCStatus_en = DFADC_Config(&gLTCADCDef_s, locLTCConfig_s);
 	SIMPLE_LOG_INFO("LTC2500-32 config status %d\r\n", gLTCStatus_en);
 }
+#endif
 
 
+#if USE_LTC_DAC
 static void LTC2601_Init()
 {
 	DAC_Config_t locLTCConfig_s;
@@ -570,8 +667,10 @@ static void LTC2601_Init()
 	gLTCDACStatus_en = DAC_Config(&gLTCDACDef_s, locLTCConfig_s);
 	SIMPLE_LOG_INFO("LTC2601 config status %d\r\n", gLTCDACStatus_en);
 }
+#endif
 
 
+#if USE_ADS_ADC
 static void ADS8881_Init()
 {
 	ADSADC_Config_t locADSConfig_s;
@@ -587,8 +686,10 @@ static void ADS8881_Init()
 	gADSStatus_en = ADSADC_Config(&gADSADCDef_s, locADSConfig_s);
 	SIMPLE_LOG_INFO("ADS8881 config status %d\r\n", gADSStatus_en);
 }
+#endif
 
 
+#if USE_I2C_EEPROM
 static void AT24C256_Init()
 {
 	gEEPROMDef_s.config.blockSize     = 64;
@@ -600,8 +701,10 @@ static void AT24C256_Init()
 	gEEPROMStatus_en = EEPROM_Init(&gEEPROMDef_s);
 	SIMPLE_LOG_INFO("AT24C256 init status %d\r\n", gEEPROMStatus_en);
 }
+#endif
 
 
+#if USE_SPI_EEPROM
 static void _25LC256_Init()
 {
 	gSPIEEPROMDef_s.config.blockSize     = 64;
@@ -612,8 +715,10 @@ static void _25LC256_Init()
 	gEEPROMStatus_en = EEPROM_Init(&gSPIEEPROMDef_s);
 	SIMPLE_LOG_INFO("25LC256 init status %d\r\n", gEEPROMStatus_en);
 }
+#endif
 
 
+#if USE_LTC_ADC
 static void LTC250032_Run()
 {
 	DFADC_StartADConversion(&gLTCADCDef_s);
@@ -629,8 +734,10 @@ static void LTC250032_Run()
 							gRawADCData_i32 - gLastRawADCData_i32,
 							gVolt_i32);
 }
+#endif
 
 
+#if USE_LTC_DAC
 static void LTC2601_Run()
 {
 	gLTCDACStatus_en = DAC_StartDAConversion(&gLTCDACDef_s, WRITE_TO_INPUT_REGISTER, dac_value);
@@ -639,8 +746,10 @@ static void LTC2601_Run()
 							gLTCDACStatus_en,
 							dac_value);
 }
+#endif
 
 
+#if USE_ADS_ADC
 static void ADS8881_Run()
 {
 	ADSADC_StartADConversion(&gADSADCDef_s);
@@ -655,8 +764,10 @@ static void ADS8881_Run()
 							gRawADCData_i32 - gLastRawADCData_i32,
 							gVolt_i32);
 }
+#endif
 
 
+#if USE_I2C_EEPROM
 static void AT24C256_Run()
 {
 	memset(writeData, randomWriteData, SIZE(writeData));
@@ -678,8 +789,10 @@ static void AT24C256_Run()
 	SIMPLE_LOG_INFO("Read Memory state %d\r\n", gEEPROMStatus_en);
 	HAL_Delay(20);
 }
+#endif
 
 
+#if USE_SPI_EEPROM
 static void _25LC256_Run()
 {
 	memset(writeData, randomWriteData, SIZE(writeData));
@@ -701,6 +814,7 @@ static void _25LC256_Run()
 	SIMPLE_LOG_INFO("Read Memory state %d\r\n", gEEPROMStatus_en);
 	HAL_Delay(20);
 }
+#endif
 
 
 static void delay_5us(uint32_t delayTime)
