@@ -31,28 +31,25 @@ extern "C" {
 
 
 /****************************************************************************
- * 							Private variables								*
+ * 				Private variables                           *
  ****************************************************************************/
 
 
 /****************************************************************************
- * 							Private functions								*
+ * 				Private functions                           *
  ****************************************************************************/
 
 /****************************************************************************
- * 							Public functions								*
+ * 				Public functions                            *
  ****************************************************************************/
 ADSADC_State_t ADSADC_Init(ADSADC_Def_t *locADSADC_p)
 {
-	if ((NULL == locADSADC_p) 				||
-	    (NULL == locADSADC_p->spiHandle) 	||
-		(NULL == locADSADC_p->controlHandle)
-	   )
-	{
-		return ADSADC_NULL_PARAM;
-	}
+    if ((NULL == locADSADC_p) || (NULL == locADSADC_p->spiHandle) || (NULL == locADSADC_p->controlHandle))
+    {
+        return ADSADC_NULL_PARAM;
+    }
 
-	return ADSADC_OK;
+    return ADSADC_OK;
 }
 
 
@@ -64,184 +61,182 @@ void ADSADC_DeInit(ADSADC_Def_t *locADSADC_p)
 
 ADSADC_State_t ADSADC_Config(ADSADC_Def_t *locADSADC_p, ADSADC_Config_t locADSADC_Config_s)
 {
-	if (NULL == locADSADC_p)
-	{
-		return ADSADC_NULL_PARAM;
-	}
+    if (NULL == locADSADC_p)
+    {
+        return ADSADC_NULL_PARAM;
+    }
 
-	if (locADSADC_Config_s.deviceType > ADS9110)
-	{
-		return ADSADC_INVLD_DEVICE_TYPE;
-	}
+    if (locADSADC_Config_s.deviceType > ADS9110)
+    {
+        return ADSADC_INVLD_DEVICE_TYPE;
+    }
 
-	locADSADC_p->timeout    = locADSADC_Config_s.timeout;
-	locADSADC_p->refVoltage = locADSADC_Config_s.refVoltage;
-	locADSADC_p->convTime   = locADSADC_Config_s.convTime;
+    locADSADC_p->timeout    = locADSADC_Config_s.timeout;
+    locADSADC_p->refVoltage = locADSADC_Config_s.refVoltage;
+    locADSADC_p->convTime   = locADSADC_Config_s.convTime;
 
-	if ((locADSADC_Config_s.deviceType < ADS8866) || (ADS9110 == locADSADC_Config_s.deviceType))
-	{
-		locADSADC_p->valueLSB = 131071;
-	}
-	else
-	{
-		locADSADC_p->valueLSB = 32767;
-	}
+    if ((locADSADC_Config_s.deviceType < ADS8866) || (ADS9110 == locADSADC_Config_s.deviceType))
+    {
+        locADSADC_p->valueLSB = 131071;
+    }
+    else
+    {
+        locADSADC_p->valueLSB = 32767;
+    }
 
-	return ADSADC_OK;
+    return ADSADC_OK;
 }
 
 
 ADSADC_State_t ADSADC_Control(ADSADC_Def_t *locADSADC_p, ADSADC_Control_Event_t locControlEvent_en, uint32_t locControlData_u32, void *locContext_p)
 {
-	if (NULL != locADSADC_p->controlHandle)
-	{
-		return locADSADC_p->controlHandle(locControlEvent_en, locControlData_u32, locContext_p);
-	}
-	else
-	{
-		return ADSADC_NULL_PARAM;
-	}
+    if (NULL != locADSADC_p->controlHandle)
+    {
+        return locADSADC_p->controlHandle(locControlEvent_en, locControlData_u32, locContext_p);
+    }
+    else
+    {
+        return ADSADC_NULL_PARAM;
+    }
 }
 
 
 ADSADC_State_t ADSADC_StartADConversion(ADSADC_Def_t *locADSADC_p)
 {
-	uint32_t locConvTimeout_u32;
+    uint32_t locConvTimeout_u32;
 
-	if ((NULL == locADSADC_p) 				||
-	    (NULL == locADSADC_p->spiHandle) 	||
-		(NULL == locADSADC_p->controlHandle)
-	   )
-	{
-		return ADSADC_NULL_PARAM;
-	}
+    if ((NULL == locADSADC_p) || (NULL == locADSADC_p->spiHandle) || (NULL == locADSADC_p->controlHandle))
+    {
+        return ADSADC_NULL_PARAM;
+    }
 
-	locConvTimeout_u32 = locADSADC_p->convTime;
+    locConvTimeout_u32 = locADSADC_p->convTime;
 
-	switch (locADSADC_p->communication)
-	{
-		case SPI_3WIRE:
-		{
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 1, NULL);
-			if (NULL == locADSADC_p->delayHandle)
-			{
-				while (locConvTimeout_u32 > 0)
-				{
-					locConvTimeout_u32--;
-				}
-			}
-			else
-			{
-				locADSADC_p->delayHandle(locConvTimeout_u32);
-			}
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
-			break;
-		}
+    switch (locADSADC_p->communication)
+    {
+        case SPI_3WIRE:
+        {
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 1, NULL);
 
-		case SPI_4WIRE:
-		{
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_CONVST, 1, NULL);
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_DIN, 1, NULL);
-			if (NULL == locADSADC_p->delayHandle)
-			{
-				while (locConvTimeout_u32 > 0)
-				{
-					locConvTimeout_u32--;
-				}
-			}
-			else
-			{
-				locADSADC_p->delayHandle(locConvTimeout_u32);
-			}
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_DIN, 0, NULL);
-			break;
-		}
+            if (NULL == locADSADC_p->delayHandle)
+            {
+                while (locConvTimeout_u32 > 0)
+                {
+                    locConvTimeout_u32--;
+                }
+            }
+            else
+            {
+                locADSADC_p->delayHandle(locConvTimeout_u32);
+            }
 
-		case SPI_DAISY_CHAIN:
-		{
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_CONVST, 1, NULL);
-			break;
-		}
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
+            break;
+        }
 
-		default: break;
-	}
+        case SPI_4WIRE:
+        {
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_CONVST, 1, NULL);
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_DIN, 1, NULL);
 
-	return ADSADC_OK;
+            if (NULL == locADSADC_p->delayHandle)
+            {
+                while (locConvTimeout_u32 > 0)
+                {
+                    locConvTimeout_u32--;
+                }
+            }
+            else
+            {
+                locADSADC_p->delayHandle(locConvTimeout_u32);
+            }
+
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_DIN, 0, NULL);
+            break;
+        }
+
+        case SPI_DAISY_CHAIN:
+        {
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_4WIRE_CONVST, 1, NULL);
+            break;
+        }
+
+        default: break;
+    }
+
+    return ADSADC_OK;
 }
 
 
 ADSADC_State_t ADSADC_ReadDistributedData(ADSADC_Def_t *locADSADC_p, uint8_t *locReadData_au8)
 {
-	ADSADC_State_t locRet = ADSADC_DEVICE_BUSY;
+    ADSADC_State_t locRet = ADSADC_DEVICE_BUSY;
 
-	if ((NULL == locADSADC_p) 				||
-	    (NULL == locADSADC_p->spiHandle) 	||
-		(NULL == locADSADC_p->controlHandle)
-	   )
-	{
-		return ADSADC_NULL_PARAM;
-	}
+    if ((NULL == locADSADC_p) || (NULL == locADSADC_p->spiHandle) || (NULL == locADSADC_p->controlHandle))
+    {
+        return ADSADC_NULL_PARAM;
+    }
 
-	switch (locADSADC_p->communication)
-	{
-		case SPI_3WIRE:
-		{
-			locRet = locADSADC_p->spiHandle(SPI_ADS_EVENT_RECEIVE, locReadData_au8, 2, NULL);
-			break;
-		}
+    switch (locADSADC_p->communication)
+    {
+        case SPI_3WIRE:
+        {
+            locRet = locADSADC_p->spiHandle(SPI_ADS_EVENT_RECEIVE, locReadData_au8, 2, NULL);
+            break;
+        }
 
-		case SPI_4WIRE:
-		{
-			locRet = locADSADC_p->spiHandle(SPI_ADS_EVENT_RECEIVE, locReadData_au8, 2, NULL);
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
-			break;
-		}
+        case SPI_4WIRE:
+        {
+            locRet = locADSADC_p->spiHandle(SPI_ADS_EVENT_RECEIVE, locReadData_au8, 2, NULL);
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
+            break;
+        }
 
-		case SPI_DAISY_CHAIN:
-		{
-			locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
-			break;
-		}
+        case SPI_DAISY_CHAIN:
+        {
+            locADSADC_p->controlHandle(CONTROL_ADS_EVENT_3WIRE_CONVST, 0, NULL);
+            break;
+        }
 
-		default: break;
-	}
+        default: break;
+    }
 
-	return locRet;
+    return locRet;
 }
 
 
 ADSADC_State_t ADSADC_ReadChainData(ADSADC_Def_t *locADSADC_p, uint16_t locNumDevice, uint8_t *locReadData)
 {
-	return ADSADC_DEVICE_BUSY;
+    return ADSADC_DEVICE_BUSY;
 }
 
 
 void ADSADC_ConvToVoltage(ADSADC_Def_t *locADSADC_p, uint8_t *locRawData_p, float *locVoltage_p)
 {
-	int32_t locRawADC_i32 = 0;
-	float temp_f = 0;
+    int32_t locRawADC_i32 = 0;
+    float temp_f = 0;
 
-	CONV_18BITS_TO_INT32_RAW_DATA(locRawData_p, &locRawADC_i32);
+    CONV_18BITS_TO_INT32_RAW_DATA(locRawData_p, &locRawADC_i32);
 
-	temp_f = (float)((float)locRawADC_i32 / locADSADC_p->valueLSB);
+    temp_f = (float)((float)locRawADC_i32 / locADSADC_p->valueLSB);
 
-	if (NULL != locVoltage_p)
-	{
-		*locVoltage_p = temp_f * locADSADC_p->refVoltage;
-	}
+    if (NULL != locVoltage_p)
+    {
+        *locVoltage_p = temp_f * locADSADC_p->refVoltage;
+    }
 }
 
 
 void CONV_18BITS_TO_INT32_RAW_DATA(uint8_t *array, int32_t *dataADC)
 {
-	*dataADC = ((uint32_t)array[0] << 1) | ((uint32_t)array[1]);
-	*dataADC = *dataADC << 9;
-	*dataADC = *dataADC | ((uint32_t)array[2] << 1);
-	*dataADC = *dataADC | ((uint32_t)array[3]);
+    *dataADC = ((uint32_t)array[0] << 1) | ((uint32_t)array[1]);
+    *dataADC = *dataADC << 9;
+    *dataADC = *dataADC | ((uint32_t)array[2] << 1);
+    *dataADC = *dataADC | ((uint32_t)array[3]);
 
     if ((0x01FFFF < *dataADC) && (*dataADC <= 0x03FFFF))
     {
-    	*dataADC = (-1) * (262144 - *dataADC);
+        *dataADC = (-1) * (262144 - *dataADC);
     }
 }
 

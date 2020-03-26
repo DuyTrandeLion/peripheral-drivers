@@ -28,7 +28,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif  
+#endif
 
 int8_t hex2int(char *prt, uint8_t *value)
 {

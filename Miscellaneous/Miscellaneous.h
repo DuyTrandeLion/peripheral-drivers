@@ -30,12 +30,12 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif  
+#endif
 
 
 #define SIZE(value)                     (sizeof(value) / sizeof(value[0]))
 
-#define ABSOLUTE(value)                 ((value) >= 0.0)? (value) : ((-1.0) * (value)) 
+#define ABSOLUTE(value)                 ((value) >= 0.0)? (value) : ((-1.0) * (value))
 
 #ifndef MAX
 #define MAX(value1, value2)             ((value1) >= (value2))? (value1) : (value2)

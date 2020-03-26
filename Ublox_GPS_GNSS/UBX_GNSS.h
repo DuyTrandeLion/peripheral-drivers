@@ -32,7 +32,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif  
+#endif
 
 
 #define UBXGNSS_UART_INTERFACE      (0x01)
@@ -101,7 +101,9 @@ typedef enum
 
 #define UBXGNSS_IS_DATA_VALID(UBX_Hdl)    ((UBX_Hdl).gps.is_valid)
 
+
 #define UBXGNSS_GET_FIX(UBX_Hdl)          ((UBX_Hdl).gps.fix)
+
 
 #define UBXGNSS_GET_FIX_MODE(UBX_Hdl)     ((UBX_Hdl).gps.fix_mode)
 
@@ -109,7 +111,7 @@ typedef enum
 #define UBXGNSS_GET_LATITUDE(UBX_Hdl)     ((UBX_Hdl).gps.latitude)
 
 
-#define UBXGNSS_GET_LONGITUDE(UBX_Hdl)      ((UBX_Hdl).gps.longitude)
+#define UBXGNSS_GET_LONGITUDE(UBX_Hdl)    ((UBX_Hdl).gps.longitude)
 
 
 #define UBXGNSS_GET_ALTITUDE(UBX_Hdl)       ((UBX_Hdl).gps.altitude)
@@ -191,9 +193,9 @@ typedef enum
  */
 typedef UBXGNSS_State_t (*UBXGNSS_Comm_Handle_t)(UBXGNSS_Comm_Event_t,
                                                  uint16_t locDeviceAddress_u16,
-                                                 uint16_t locRegisterAddress_u16, 
-                                                 uint8_t *locCommData_p8, 
-                                                 uint16_t locCommDataSize_u16, 
+                                                 uint16_t locRegisterAddress_u16,
+                                                 uint8_t *locCommData_p8,
+                                                 uint16_t locCommDataSize_u16,
                                                  void *locContext_p);
 
 
@@ -248,12 +250,24 @@ void UBXGNSS_DeInit(UBXGNSS_Def_t *locUBXGNSS_p);
 void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locCommData_p, uint16_t locCommDataSize_u16);
 
 
+/**@brief Function for getting UBX message.
+ *
+ * @param[in] 	locUBXGNSS_p		Pointer to driver definition.
+ * @param[in]   locMsg_p                Pointer to data buffer to store the message.
+ * @param[out]  locReadMsgSize_p        Pointer to the message length.
+ */
 UBXGNSS_State_t UBXGNSS_GetUBXMessage(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locMsg_p, uint16_t *locReadMsgSize_p);
 
 
-UBXGNSS_State_t UBXGNSS_ProcessUBXMsg(UBXGNSS_Def_t *locUBXGNSS_p, 
-                                      uint8_t *locMsg_p, 
-                                      uint16_t locMsgLen_u16);
+/**@brief Function for processing UBX message.
+ *
+ * @param[in] 	locUBXGNSS_p		Pointer to driver definition.
+ * @param[in]   locCommData_p           Pointer to the message to be processed.
+ * @param[in]   locMsgLen_u16           Length of the message to be processed.
+ *
+ * @note        This function should be put in the interrupt handler or in the loop.
+ */
+UBXGNSS_State_t UBXGNSS_ProcessUBXMsg(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locMsg_p, uint16_t locMsgLen_u16);
 
 #ifdef __cplusplus
 }
