@@ -132,8 +132,8 @@ typedef struct
 {
     Memory_Map_t		memory;
     EEPROM_Config_t		config;
-    EEPROM_Comm_Handle_t 	const commHandle;
-    EEPROM_BusyWait_Handle_t    const busyHandle;
+    EEPROM_Comm_Handle_t 	commHandle;
+    EEPROM_BusyWait_Handle_t    busyHandle;
 } EEPROM_Def_t;
 
 

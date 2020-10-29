@@ -27,7 +27,7 @@
 #include "UBX_GNSS.h"
 #include "Miscellaneous.h"
 
-#include "gps/gps.h"
+#include "lwgps.h"
 
 #define CRC_START_CALCULATING_BYTE  2
 #define CRC_SIZE_BYTE               2
@@ -77,7 +77,7 @@ UBXGNSS_State_t UBXGNSS_Init(UBXGNSS_Def_t *locUBXGNSS_p)
     }
 
     /* Init GPS */
-    gps_init(&(locUBXGNSS_p->gps));
+    lwgps_init(&(locUBXGNSS_p->gps));
     return UBXGNSS_OK;
 }
 
@@ -95,7 +95,7 @@ void UBXGNSS_ProcessData(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locCommData_p, ui
     if (('$' == locCommData_p[0]) && ('\r' == locCommData_p[len - 2]) && ('\n' == locCommData_p[len - 1]))
     {
         /* Process all input data */
-        gps_process(&(locUBXGNSS_p->gps), locCommData_p, locCommDataSize_u16);
+        lwgps_process(&(locUBXGNSS_p->gps), locCommData_p, locCommDataSize_u16);
     }
 }
 

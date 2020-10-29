@@ -28,7 +28,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "gps/gps.h"
+#include "lwgps.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -162,7 +162,7 @@ typedef enum
 //    /* Nautical values */
 //    gps_speed_smph,                             /*!< Sea miles per hour */
 //} gps_speed_t;
-#define UBXGNSS_GET_INSTANT_SPEED(UBX_Hdl, ts)  (gps_to_speed((UBX_Hdl).gps.speed, (ts)))
+#define UBXGNSS_GET_INSTANT_SPEED(UBX_Hdl, ts)  (lwgps_to_speed((UBX_Hdl).gps.speed, (ts)))
 
 
 #define UBXGNSS_GET_H_DILUTION(UBX_Hdl)     ((UBX_Hdl).gps.dop_h)
@@ -215,10 +215,10 @@ typedef struct
         uint8_t                 address;
         uint8_t                 nmeaDataSource;
 	uint32_t		timeout;
-        uint32_t                timeToFirstFix;
-        gps_t                   gps;
-	UBXGNSS_Comm_Handle_t 	const commHandle;
-	UBXGNSS_Delay_Handle_t 	const delayHandle;
+        uint32_t                timeToFirstFix;       /* ms */
+        lwgps_t                 gps;
+	UBXGNSS_Comm_Handle_t 	commHandle;
+	UBXGNSS_Delay_Handle_t 	delayHandle;
 } UBXGNSS_Def_t;
 
 

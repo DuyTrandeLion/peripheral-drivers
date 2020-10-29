@@ -148,9 +148,9 @@ typedef struct
     uint32_t			valueLSB;
     uint32_t			timeout;
     float			refVoltage;
-    ADSADC_SPI_Handle_t 	const spiHandle;
-    ADSADC_Control_Handle_t 	const controlHandle;
-    ADSADC_Delay_Handle_t 	const delayHandle;
+    ADSADC_SPI_Handle_t 	spiHandle;
+    ADSADC_Control_Handle_t 	controlHandle;
+    ADSADC_Delay_Handle_t 	delayHandle;
 } ADSADC_Def_t;
 
 

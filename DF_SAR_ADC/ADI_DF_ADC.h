@@ -178,9 +178,9 @@ typedef struct
     uint32_t                valueLSB;
     uint32_t                timeout;
     float                   offsetRefVoltage;
-    DFADC_SPI_Handle_t      const spiHandle;
-    DFADC_Control_Handle_t  const controlHandle;
-    DFADC_BusyWait_Handle_t const busyHandle;
+    DFADC_SPI_Handle_t      spiHandle;
+    DFADC_Control_Handle_t  controlHandle;
+    DFADC_BusyWait_Handle_t busyHandle;
 } DFADC_Def_t;
 
 

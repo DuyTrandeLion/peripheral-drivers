@@ -114,8 +114,8 @@ typedef struct
     uint16_t			valueLSB;
     uint32_t			timeout;
     float			refVoltage;
-    DAC_SPI_Handle_t 		const spiHandle;
-    DAC_BusyWait_Handle_t	const busyHandle;
+    DAC_SPI_Handle_t 		spiHandle;
+    DAC_BusyWait_Handle_t	busyHandle;
 } DAC_Def_t;
 
 
