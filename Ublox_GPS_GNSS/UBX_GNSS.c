@@ -121,14 +121,7 @@ UBXGNSS_State_t UBXGNSS_GetUBXMessage(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locM
         {
             locRegAddress = NUMBER_OF_BYTES_AVAILABLE_ADDRESS;
             /* Get number of available bytes from register 0xFD and 0xFE */
-            locRet = locUBXGNSS_p->commHandle(I2C_UBX_EVENT_TRANSMIT, locUBXGNSS_p->address, 0, &locRegAddress, sizeof(uint8_t), NULL);
-
-            if (UBXGNSS_OK != locRet)
-            {
-                return UBXGNSS_I2C_COMM_FAILURE;
-            }
-
-            locRet = locUBXGNSS_p->commHandle(I2C_UBX_EVENT_RECEIVE, locUBXGNSS_p->address, 0, locDataSizeAvailableBuff_u16, SIZE(locDataSizeAvailableBuff_u16), NULL);
+            locRet = locUBXGNSS_p->commHandle(I2C_UBX_EVENT_RECEIVE, locUBXGNSS_p->address, locRegAddress, locDataSizeAvailableBuff_u16, SIZE(locDataSizeAvailableBuff_u16), NULL);
 
             if (UBXGNSS_OK != locRet)
             {
@@ -141,14 +134,7 @@ UBXGNSS_State_t UBXGNSS_GetUBXMessage(UBXGNSS_Def_t *locUBXGNSS_p, uint8_t *locM
             {
                 locRegAddress = DATA_STREAM_ADDRESS;
 
-                locRet = locUBXGNSS_p->commHandle(I2C_UBX_EVENT_TRANSMIT, locUBXGNSS_p->address, 0, &locRegAddress, sizeof(uint8_t), NULL);
-
-                if (UBXGNSS_OK != locRet)
-                {
-                    return UBXGNSS_I2C_COMM_FAILURE;
-                }
-
-                locRet = locUBXGNSS_p->commHandle(I2C_UBX_EVENT_RECEIVE, locUBXGNSS_p->address, 0, locMsg_p, locDataSizeAvailable_u16, NULL);
+                locRet = locUBXGNSS_p->commHandle(I2C_UBX_EVENT_RECEIVE, locUBXGNSS_p->address, locRegAddress, locMsg_p, locDataSizeAvailable_u16, NULL);
 
                 if (UBXGNSS_OK != locRet)
                 {

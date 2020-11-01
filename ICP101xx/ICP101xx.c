@@ -11,6 +11,7 @@ static uint8_t gUpdateCheck_u8 = 0;
 
 ICPPress_State_t ICPPress_Init(ICPPRess_Def_t *locICPPress_p)
 {
+    uint8_t restart_i2c = 1;
     uint8_t locOTP_au8[5];
     uint8_t locWriteData_au8[2];
     uint8_t locReadData_au8[3];
@@ -37,7 +38,7 @@ ICPPress_State_t ICPPress_Init(ICPPRess_Def_t *locICPPress_p)
 
     for (uint8_t i = 0; i < 4; i++)
     {
-        if (ICP_OK != locICPPress_p->commHandle(I2C_EVENT_TRANSMIT, ICP_I2C_ADDRESS, locWriteData_au8, 2, NULL))
+        if (ICP_OK != locICPPress_p->commHandle(I2C_EVENT_TRANSMIT, ICP_I2C_ADDRESS, locWriteData_au8, 2, (uint8_t *)&restart_i2c))
         {
             return ICP_COMM_ERROR;
         }
