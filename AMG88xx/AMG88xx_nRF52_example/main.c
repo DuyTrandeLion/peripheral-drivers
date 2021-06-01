@@ -60,6 +60,7 @@
 #include "nrf_log_default_backends.h"
 
 #include "AMG88xx.h"
+#include "AMG88xx_conf.h"
 #include "grideye_api_lv1.h"
 #include "grideye_api_lv2.h"
 #include "grideye_api_lv3.h"
@@ -196,6 +197,7 @@ static void twi_init(void)
        .clear_bus_init     = false
     };
 
+    //err_code = nrf_drv_twi_init(&m_twi, &twi_amg8833_config, NULL, NULL);
     err_code = nrf_drv_twi_init(&m_twi, &twi_amg8833_config, twi_handler, NULL);
     APP_ERROR_CHECK(err_code);
 
@@ -223,6 +225,12 @@ static void amg8833_init(void)
 }
 
 
+BOOL GE_I2CRead(UCHAR ucI2cAddr, UCHAR ucRegAddr, UCHAR ucSize, UCHAR *ucDstAddr)
+{
+    return amg88xx_comm_handle(I2C_EVENT_RECEIVE, (uint16_t)ucI2cAddr, ucRegAddr, ucDstAddr, ucSize, NULL);
+}
+
+
 /**
  * @brief Function for main application entry.
  */
@@ -246,13 +254,13 @@ int main(void)
     {
         nrfx_systick_get(&m_current_systick);
 
-        if ((uint32_t)(m_current_systick.time - m_previous_systick.time) >= 1000)
+        if ((uint32_t)(m_current_systick.time - m_previous_systick.time) >= (SystemCoreClock / 4))
         {
-            amg8833_state = AMG88xx_ReadStatus(&m_amg8833, &m_amg8833_temperature_status, &m_amg8833_interrupt_status);
-            APP_ERROR_CHECK(amg8833_state);
+            //amg8833_state = AMG88xx_ReadStatus(&m_amg8833, &m_amg8833_temperature_status, &m_amg8833_interrupt_status);
+            //APP_ERROR_CHECK(amg8833_state);
 
-            amg8833_state = AMG88xx_ReadThermistor(&m_amg8833, m_amg8833_thermsistor, &m_amg8833_thermsistor_temperature);
-            APP_ERROR_CHECK(amg8833_state);
+            //amg8833_state = AMG88xx_ReadThermistor(&m_amg8833, m_amg8833_thermsistor, &m_amg8833_thermsistor_temperature);
+            //APP_ERROR_CHECK(amg8833_state);
 
             amg8833_state = AMG88xx_ReadPixelsTemperature(&m_amg8833, m_amg8833_raw_pixel_temperatures, m_amg8833_pixel_temperatures);
             APP_ERROR_CHECK(amg8833_state);
