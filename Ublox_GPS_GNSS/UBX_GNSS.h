@@ -191,11 +191,11 @@ typedef enum
  *
  * @retval UBXGNSS_OK If the notification was sent successfully. Otherwise, an error code is returned.
  */
-typedef UBXGNSS_State_t (*UBXGNSS_Comm_Handle_t)(UBXGNSS_Comm_Event_t,
+typedef UBXGNSS_State_t (*UBXGNSS_Comm_Handle_t)(UBXGNSS_Comm_Event_t locCommEvent_en,
                                                  uint16_t locDeviceAddress_u16,
                                                  uint16_t locRegisterAddress_u16,
-                                                 uint8_t *locCommData_p8,
-                                                 uint16_t locCommDataSize_u16,
+                                                 uint8_t *locData_p8,
+                                                 uint16_t locDataSize_u16,
                                                  void *locContext_p);
 
 

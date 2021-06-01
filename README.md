@@ -41,6 +41,21 @@
     |**LTC2601**|**x**|
     |**LTC2611**|**x**|
 
+    |AMG88xx|Tested|
+    |---------|---------|
+    |**AMG8833**|**x**|
+    |**AMG8834**|**x**|
+    |**amg8833-grid-eye_api_v2.1**|**x**|
+
+    ```
+    Grid-EYE API Lib is divided into 3 layers; users can select API functions from these layers
+    according to the requirement.
+
+    * API Lv1: APIs from this layer implement Grid-EYE data acquisition, transformation of temperature value and data format.
+    * API Lv2: APIs from this layer implement filtering of original data, and provide functions for image processing, object detection, and human body recognition.
+    * API Lv3 (binary code): APIs from this layer implement functions for object detection and object tracking.
+    ```
+
     |Ublox_GPS_GNSS|Tested|
     |---------|---------|
     |**SAM-M8N**|**x**|

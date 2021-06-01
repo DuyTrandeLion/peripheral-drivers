@@ -105,7 +105,7 @@ typedef enum
  *
  * @retval DFADC_OK If the notification was sent successfully. Otherwise, an error code is returned.
  */
-typedef DFADC_State_t (*DFADC_SPI_Handle_t)(DFADC_SPI_Event_t, uint8_t *, uint16_t, void *);
+typedef DFADC_State_t (*DFADC_SPI_Handle_t)(DFADC_SPI_Event_t locCommEvent_en, uint8_t *locData_p8, uint16_t locDataSize_u16, void *locContext_p);
 
 
 /**

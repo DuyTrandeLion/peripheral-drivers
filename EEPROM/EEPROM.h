@@ -91,7 +91,7 @@ typedef enum
  *
  * @retval EEPROM_OK If the notification was sent successfully. Otherwise, an error code is returned.
  */
-typedef EEPROM_State_t (*EEPROM_Comm_Handle_t)(EEPROM_Event_t, uint16_t, uint16_t, uint8_t *, uint16_t, void *);
+typedef EEPROM_State_t (*EEPROM_Comm_Handle_t)(EEPROM_Event_t locCommEvent_en, uint16_t locDeviceAddress_u16, uint16_t locDataAddress_u16, uint8_t *locData_p8, uint16_t locDataSize_u16, void *locContext_p);
 
 
 /**
