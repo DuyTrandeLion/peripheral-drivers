@@ -47,7 +47,7 @@ BOOL bAMG_PUB_I2C_Read( UCHAR ucI2cAddr, UCHAR ucRegAddr, UCHAR ucSize, UCHAR* u
 	}
 	#else	/* !defined(MCU_TEST) */
 	{
-		return( 1 );
+		return GE_I2CRead(ucI2cAddr, ucRegAddr, ucDstAddr, ucSize);
 	}
 	#endif	/*  defined(MCU_TEST) */
 }

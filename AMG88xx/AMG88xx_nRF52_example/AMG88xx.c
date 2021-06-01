@@ -22,13 +22,13 @@ AMG88xx_State_t AMG88xx_Init(AMG88xx_Def_t *locAMG88xx_p)
 
     NULL_CHECK_PARAM(locAMG88xx_p);
 
-    locRet = AMG88xx_SetOperationMode(locAMG88xx_p, NORMAL_MODE);
+    locRet = AMG88xx_SetResetMode(locAMG88xx_p, INITIAL_RESET);
     if (AMG88xx_OK != locRet)
     {
         return AMG88xx_OK;
     }
 
-    locRet = AMG88xx_SetResetMode(locAMG88xx_p, INITIAL_RESET);
+    locRet = AMG88xx_SetOperationMode(locAMG88xx_p, NORMAL_MODE);
     if (AMG88xx_OK != locRet)
     {
         return AMG88xx_OK;

@@ -16,7 +16,7 @@ typedef uint16_t		USHORT;
 typedef uint32_t		ULONG;
 typedef int8_t                  CHAR;
 
-BOOL GE_I2CRead(UCHAR ucI2cAddr, UCHAR ucRegAddr, UCHAR ucSize, UCHAR *ucDstAddr);
+BOOL GE_I2CRead(UCHAR ucI2cAddr, UCHAR ucRegAddr, UCHAR *ucDstAddr, UCHAR ucSize);
 
 #ifdef __cplusplus
 }
