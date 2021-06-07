@@ -125,8 +125,6 @@ static AMG88xx_State_t amg88xx_comm_handle(AMG88xx_Event_t amg88xx_event, uint16
         case I2C_EVENT_RECEIVE:
         {
             uint8_t write_data;
-            uint8_t read_buffer[128];
-
             write_data = register_address;
             
 #if TWMI_USE_DMA            
@@ -142,12 +140,11 @@ static AMG88xx_State_t amg88xx_comm_handle(AMG88xx_Event_t amg88xx_event, uint16
             while (false == m_xfer_done) { };
             m_xfer_done = false;
 #endif
-            err_code = nrf_drv_twi_rx(&m_twi, device_address, read_buffer, data_size);
+            err_code = nrf_drv_twi_rx(&m_twi, device_address, data, data_size);
             APP_ERROR_CHECK(err_code);
 #if TWMI_USE_DMA            
             while (false == m_xfer_done) { };
 #endif
-            memcpy(data, read_buffer, data_size);
             break;
         }
 
@@ -291,7 +288,7 @@ static void amg8833_init(void)
     amg8833_state = AMG88xx_Init(&m_amg8833);
     NRF_LOG_INFO("AMG8833 initialized state: %d\r\n", amg8833_state);
     
-    amg8833_state = AMG88xx_SetFPSCMode(&m_amg8833, FRAME_RATE_1FPS);
+    amg8833_state = AMG88xx_SetFPSCMode(&m_amg8833, FRAME_RATE_10FPS);
     NRF_LOG_INFO("AMG8833 set frame rate state: %d\r\n", amg8833_state);
 
     amg8833_state = AMG88xx_SetMovingAveragetMode(&m_amg8833, MOVING_AVERAGE_ENABLE);
@@ -321,7 +318,7 @@ int main(void)
 
     NRF_LOG_INFO("TWI sensor example started.\r\n");
     NRF_LOG_FLUSH();
-
+    
     while (true)
     {
         if (((uint32_t)m_timer_tick - m_previous_tick) >= 100)
