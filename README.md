@@ -41,6 +41,13 @@
     |**LTC2601**|**x**|
     |**LTC2611**|**x**|
 
+    |TMF8x0x (Integration example only)|Tested|
+    |---------|---------|
+    |**TMF8701**||
+    |**TMF8801**|**x**|
+    |**TMF8805**||
+    |**TMF8801_Driver_BareMetalMCU_v3.0.18.0**|**x**|
+
     |AMG88xx|Tested|
     |---------|---------|
     |**AMG8833**|**x**|

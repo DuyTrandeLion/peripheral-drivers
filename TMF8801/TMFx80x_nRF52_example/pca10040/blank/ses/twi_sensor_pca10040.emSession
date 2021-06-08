@@ -11,9 +11,9 @@
  <Memory3/>
  <Memory4/>
  <Project>
-  <ProjectSessionItem path="amg88xx_pca10040"/>
-  <ProjectSessionItem path="amg88xx_pca10040;amg88xx_pca10040"/>
-  <ProjectSessionItem path="amg88xx_pca10040;amg88xx_pca10040;Application"/>
+  <ProjectSessionItem path="tmf8x0x_pca10040"/>
+  <ProjectSessionItem path="tmf8x0x_pca10040;tmf8x0x_pca10040"/>
+  <ProjectSessionItem path="tmf8x0x_pca10040;tmf8x0x_pca10040;Application"/>
  </Project>
  <Register1/>
  <Register2/>
@@ -38,7 +38,7 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="72" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="60" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="76" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="72" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="amg88xx_pca10040" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="tmf8x0x_pca10040" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>
