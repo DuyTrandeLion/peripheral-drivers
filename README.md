@@ -52,7 +52,9 @@
     |---------|---------|
     |**VL53L0X**|**x**|
     |**X-CUBE-53L0A1**|**x**|
-    X-CUBE-53L0A1 product page: https://www.st.com/content/st_com/en/products/ecosystems/stm32-open-development-environment/stm32cube-expansion-software/stm32-ode-sense-sw/x-cube-53l0a1.html 
+    ```
+    X-CUBE-53L0A1 product page: https://www.st.com/content/st_com/en/products/ecosystems/stm32-open-development-environment/stm32cube-expansion-software/stm32-ode-sense-sw/x-cube-53l0a1.html
+    ```
 
     |AMG88xx|Tested|
     |---------|---------|
