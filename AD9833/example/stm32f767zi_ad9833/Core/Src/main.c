@@ -28,6 +28,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ad9833.h"
+#include "mcp4xxx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,6 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MAX_RESISTANCE		10000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,9 +49,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static float frequency;
 static AD983x_State_t AD9833_State;
+static MCP4xxx_State_t MCP41010_State;
+
 static DDS_Def_t AD9833_st;
+static PTM_Def_t MCP41010_st;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,6 +65,7 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 static AD983x_State_t AD9833_SPI_Event_Handle(DDS_SPI_Event_t commEvent_en, uint8_t *data_p8, uint16_t dataSize_u16, void *context_p);
+static MCP4xxx_State_t MCP41010_SPI_Event_Handle(PTM_SPI_Event_t commEvent_en, uint8_t *data_p8, uint16_t dataSize_u16, void *context_p);
 static void AD9833_Delay_Handle(uint32_t delayTime_u32);
 /* USER CODE END 0 */
 
@@ -97,6 +102,14 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
+  MCP41010_st.device = MCP42xx;
+  MCP41010_st.mode = POTENTIOMETER_MODE;
+  MCP41010_st.maxResistance = MAX_RESISTANCE;
+  MCP41010_st.spiHandle = MCP41010_SPI_Event_Handle;
+
+  MCP41010_State = MCP4xxx_Init(&MCP41010_st);
+  MCP41010_State = MCP4xxx_WritePotentiometerValue(&MCP41010_st, MCP4xxx_SELECT_PTM_1, 5000);
+
   AD9833_st.outputEnabled = 1;
   AD9833_st.dacEnabled = 1;
   AD9833_st.internalClockEnabled = 1;
@@ -105,7 +118,7 @@ int main(void)
   AD9833_st.delayHandle = AD9833_Delay_Handle;
 
   AD9833_State = AD983x_Init(&AD9833_st);
-  AD9833_State = AD983x_ApplySignal(&AD9833_st, REG0, 8000000, REG0, 45.0, REG0, SQUARE_WAVE);
+  AD9833_State = AD983x_ApplySignal(&AD9833_st, REG0, 1000000, REG0, 0.0, REG0, SQUARE_WAVE);
   AD9833_State = AD983x_EnableOutput(&AD9833_st, 1);
 
   /* USER CODE END 2 */
@@ -211,6 +224,43 @@ static AD983x_State_t AD9833_SPI_Event_Handle(DDS_SPI_Event_t commEvent_en, uint
 		case HAL_TIMEOUT:
 		{
 			ret = AD983x_COMM_TIMEOUT;
+			break;
+		}
+
+		default: break;
+	}
+
+	return ret;
+}
+
+static MCP4xxx_State_t MCP41010_SPI_Event_Handle(PTM_SPI_Event_t commEvent_en, uint8_t *data_p8, uint16_t dataSize_u16, void *context_p)
+{
+	HAL_StatusTypeDef ret;
+
+	if (SPI_PTM_EVENT_TRANSMIT == commEvent_en)
+	{
+		HAL_GPIO_WritePin(SPI1_CS1_GPIO_Port, SPI1_CS1_Pin, GPIO_PIN_RESET);
+		ret = HAL_SPI_Transmit(&hspi1, data_p8, dataSize_u16, 1000);
+		HAL_GPIO_WritePin(SPI1_CS1_GPIO_Port, SPI1_CS1_Pin, GPIO_PIN_SET);
+	}
+
+	switch (ret)
+	{
+		case HAL_ERROR:
+		{
+			ret = MCP4xxx_COMM_ERROR;
+			break;
+		}
+
+		case HAL_BUSY:
+		{
+			ret = MCP4xxx_DEVICE_BUSY;
+			break;
+		}
+
+		case HAL_TIMEOUT:
+		{
+			ret = MCP4xxx_COMM_TIMEOUT;
 			break;
 		}
 

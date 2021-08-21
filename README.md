@@ -77,6 +77,15 @@
     |**SAM-M8Q**|**x**|
     |**SAM-M9N**|**x**|
 
+    |AD983x|Tested|
+    |---------|---------|
+    |**AD9833**|**x**|
+    |**AD9834**||
+
+    |MCP41xxx|Tested|
+    |---------|---------|
+    |**MCP41010**|**x**|
+
 # Usage
 1. Clone the repository and submodules:
     ```bash

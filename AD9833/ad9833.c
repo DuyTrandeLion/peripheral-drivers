@@ -281,7 +281,7 @@ AD983x_State_t AD983x_GetActualProgrammedPhase(DDS_Def_t *locAD983x_p, Registers
 }
 
 
-AD983x_State_t AD983x_GetResolution(DDS_Def_t *locAD983x_p, float *locResolution_pf)
+AD983x_State_t AD983x_GetFrequencyResolution(DDS_Def_t *locAD983x_p, float *locResolution_pf)
 {
 	NULL_CHECK_PARAM(locAD983x_p);
 

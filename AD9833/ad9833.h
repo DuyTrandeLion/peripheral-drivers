@@ -58,6 +58,7 @@ typedef enum
     SPI_DDS_EVENT_BUSY_WAIT					= 0x07,
 } DDS_SPI_Event_t;
 
+/** Supported waveform type. */
 typedef enum
 {
 	SINE_WAVE			= 0x2000,
@@ -66,6 +67,7 @@ typedef enum
 	HALF_SQUARE_WAVE	= 0x2020,
 } WaveformType_t;
 
+/** Data registers. */
 typedef enum
 {
 	REG0,
@@ -116,33 +118,130 @@ typedef struct
 } DDS_Def_t;
 
 
+/**
+ * @brief Function to reset the waveform generator.
+ *
+ * @param[in] locAD983x_p		Pointer to driver definition.
+ *
+ * @retval AD983x_OK			If the driver was reseted successfully.
+ *
+ */
 AD983x_State_t AD983x_Reset(DDS_Def_t *locAD983x_p);
 
 
+/**
+ * @brief Function to initialize and setup the waveform generator.
+ *
+ * @param[in] locAD983x_p		Pointer to driver definition.
+ *
+ * @retval AD983x_OK			If the driver was initialized successfully.
+ *
+ */
 AD983x_State_t AD983x_Init(DDS_Def_t *locAD983x_p);
 
 
+/**
+ * @brief Function to enable output of the waveform generator by disabling the reset bit.
+ *
+ * @param[in] locAD983x_p			Pointer to driver definition.
+ * @param[in] locOutputState_u8		Output state, carries only 0/1 value.
+ *
+ * @retval AD983x_OK				If the output was set successfully.
+ *
+ */
 AD983x_State_t AD983x_EnableOutput(DDS_Def_t *locAD983x_p, uint8_t locOutputState_u8);
 
 
+/**
+ * @brief Function to set output source of the waveform generator
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locFrequencyRegister_en	Output source of Frequency register, carries values from Registers_t.
+ * @param[in] locPhaseRegister_en		Output source of Phase register, carries values from Registers_t.
+ *
+ * @retval AD983x_OK					If the feature was set successfully.
+ *
+ */
 AD983x_State_t AD983x_SetOutputSource(DDS_Def_t *locAD983x_p, Registers_t locFrequencyRegister_en, Registers_t locPhaseRegister_en);
 
 
+/**
+ * @brief Function to enable DAC of the waveform generator.
+ *
+ * @param[in] locAD983x_p			Pointer to driver definition.
+ * @param[in] locDACState_u8		DAC state, carries only 0/1 value.
+ *
+ * @retval AD983x_OK				If the DAC was set successfully.
+ *
+ */
 AD983x_State_t AD983x_EnableDAC(DDS_Def_t *locAD983x_p, uint8_t locDACState_u8);
 
 
+/**
+ * @brief Function to enable internal clock of the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locInternalClockState_u8	Internal clock state, carries only 0/1 value.
+ *
+ * @retval AD983x_OK					If the internal clock was set successfully.
+ *
+ */
 AD983x_State_t AD983x_EnableInternalClock(DDS_Def_t *locAD983x_p, uint8_t locInternalClockState_u8);
 
 
+/**
+ * @brief Function to set the waveform frequency of the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locFrequencyRegister_en	Output source of Frequency register, carries values from Registers_t.
+ * @param[in] locFrequencyInHz_u32		Desired frequency.
+ *
+ * @retval AD983x_OK					If the frequency was set successfully.
+ *
+ */
 AD983x_State_t AD983x_SetFrequency(DDS_Def_t *locAD983x_p, Registers_t locFrequencyRegister_en, uint32_t locFrequencyInHz_u32);
 
 
+/**
+ * @brief Function to set the waveform phase of the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locPhaseRegister_en		Output source of Phase register, carries values from Registers_t.
+ * @param[in] locPhaseInDegree_f		Desired phase shift.
+ *
+ * @retval AD983x_OK					If the phase shift was set successfully.
+ *
+ */
 AD983x_State_t AD983x_SetPhase(DDS_Def_t *locAD983x_p, Registers_t locPhaseRegister_en, float locPhaseInDegree_f);
 
 
+/**
+ * @brief Function to set the waveform type of the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locWaveFormRegister_en	Waveform register, carries values from Registers_t.
+ * @param[in] locWaveFormType_en		Waveform type, carries values from WaveformType_t.
+ *
+ * @retval AD983x_OK					If the waveform type was set successfully.
+ *
+ */
 AD983x_State_t AD983x_SetWaveForm(DDS_Def_t *locAD983x_p, Registers_t locWaveFormRegister_en, WaveformType_t locWaveFormType_en);
 
 
+/**
+ * @brief Function to set a signal for the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locFrequencyRegister_en	Output source of Frequency register, carries values from Registers_t.
+ * @param[in] locFrequencyInHz_u32		Desired frequency.
+ * @param[in] locPhaseRegister_en		Output source of Phase register, carries values from Registers_t.
+ * @param[in] locPhaseInDegree_f		Desired phase shift.
+ * @param[in] locWaveFormRegister_en	Waveform register, carries values from Registers_t.
+ * @param[in] locWaveFormType_en		Waveform type, carries values from WaveformType_t.
+ *
+ * @retval AD983x_OK					If the desired signal was set successfully.
+ *
+ */
 AD983x_State_t AD983x_ApplySignal(DDS_Def_t *locAD983x_p,
 								  Registers_t locFrequencyRegister_en,
 								  uint32_t locFrequencyInHz_u32,
@@ -152,15 +251,52 @@ AD983x_State_t AD983x_ApplySignal(DDS_Def_t *locAD983x_p,
 								  WaveformType_t locWaveFormType_en);
 
 
+/**
+ * @brief Function to get the actual frequency programmed to the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locFrequencyRegister_en	Output source of Frequency register, carries values from Registers_t.
+ * @param[out] locFrequency_pf			Waveform generator programmed frequency.
+ *
+ * @retval AD983x_OK					If the data is successfully read.
+ *
+ */
 AD983x_State_t AD983x_GetActualProgrammedFrequency(DDS_Def_t *locAD983x_p, Registers_t locFrequencyRegister_en, float *locFrequency_pf);
 
 
+/**
+ * @brief Function to get the actual phase programmed to the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[in] locPhaseRegister_en		Output source of Phase register, carries values from Registers_t.
+ * @param[out] locPhase_pf				Waveform generator programmed phase.
+ *
+ * @retval AD983x_OK					If the data is successfully read.
+ *
+ */
 AD983x_State_t AD983x_GetActualProgrammedPhase(DDS_Def_t *locAD983x_p, Registers_t locPhaseRegister_en, float *locPhase_pf);
 
 
-AD983x_State_t AD983x_GetResolution(DDS_Def_t *locAD983x_p, float *locResolution_pf);
+/**
+ * @brief Function to get the resolution of the frequency programmed to the waveform generator.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ * @param[out] locResolution_pf			Frequency resolution.
+ *
+ * @retval AD983x_OK					If the data is successfully read.
+ *
+ */
+AD983x_State_t AD983x_GetFrequencyResolution(DDS_Def_t *locAD983x_p, float *locResolution_pf);
 
 
+/**
+ * @brief Function to put the waveform generator to sleep mode.
+ *
+ * @param[in] locAD983x_p				Pointer to driver definition.
+ *
+ * @retval AD983x_OK					If the device is slept.
+ *
+ */
 AD983x_State_t AD983x_Sleep(DDS_Def_t *locAD983x_p);
 
 
