@@ -93,7 +93,7 @@
     ```
 2. Add the include path in your project.
 3. Add library files in your project.
-4. If you use Ublox_GPS_GNSS library, also include ```Ublox_GPS_GNSS\lwgps\lwgps\src\include``` in include path.
+4. If you use Ublox_GPS_GNSS library, also include ```Ublox_GPS_GNSS\lwgps\lwgps\src\include``` in include path. This library is called [LwGPS](https://majerle.eu/projects/lwgps-lightweight-gps-nmea-parser-parser-for-embedded-systems) and developed by [Tilen Majerle](https://github.com/MaJerle).
 # Limitations
 1. Ublox GNSS:
     - Not all functions and NMEA protocols are supported.
