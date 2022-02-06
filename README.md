@@ -86,6 +86,10 @@
     |---------|---------|
     |**MCP41010**|**x**|
 
+    |PCA9685|Tested|
+    |---------|---------|
+    |**PCA9685**|**x**|
+
 # Usage
 1. Clone the repository and submodules:
     ```bash
