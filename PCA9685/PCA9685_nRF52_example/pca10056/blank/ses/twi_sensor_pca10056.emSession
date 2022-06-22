@@ -58,8 +58,10 @@
   <Watches active="1" update="Twice a Second">
    <Watchpoint expression="m_timer_tick" name="m_timer_tick" radix="-1" linenumber="0" filename="../ses"/>
    <Watchpoint expression="m_previous_tick" name="m_previous_tick" radix="-1" linenumber="0" filename="../ses"/>
-   <Watchpoint expression="m_pca9685" name="m_pca9685" radix="-1" linenumber="0" filename=""/>
-   <Watchpoint expression="readback_prescale" name="readback_prescale" radix="-1" linenumber="0" filename=""/>
+   <Watchpoint expression="m_pca9685" name="m_pca9685" radix="-1" linenumber="0" filename="../ses"/>
+   <Watchpoint expression="readback_prescale" name="readback_prescale" radix="-1" linenumber="0" filename="../ses"/>
+   <Watchpoint expression="m_ltc2497" name="m_ltc2497" radix="-1" linenumber="0" filename="../ses"/>
+   <Watchpoint expression="m_raw_adc" name="m_raw_adc" radix="-1" linenumber="0" filename="../ses"/>
   </Watches>
  </Watch1>
  <Watch2>
@@ -72,14 +74,16 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="250" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="233" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="365" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="365" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="1" y="71" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="30" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="31" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../ltc2497.c" selected="1" top="53" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="44" y="96" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../ltc2497.h" selected="0" top="86" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="18" y="301" useTextEdit="1" openedFrom="/Users/gatran/Documents/ble-media/nRF5_SDK_17.0.2_d674dde/examples/peripheral/PCA9685_nRF52_example/main.c" useBinaryEdit="0" left="0" path="../../../pca9685.c" selected="0" top="267" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="23" y="40" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../pca9685.h" selected="0" top="20" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="16" y="137" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/mdk/system_nrf52840.c" selected="0" top="96" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="42" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/mdk/system_nrf52840.c" selected="0" top="42" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="17" y="461" useTextEdit="1" openedFrom="/Users/gatran/Documents/ble-media/nRF5_SDK_17.0.2_d674dde/modules/nrfx/mdk/system_nrf52840.c" useBinaryEdit="0" left="0" path="../../../../../../components/toolchain/cmsis/include/core_cm4.h" selected="0" top="434" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="99" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/util/app_error_weak.c" selected="0" top="74" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="78" y="135" useTextEdit="1" openedFrom="/Users/gatran/Documents/ble-media/nRF5_SDK_17.0.2_d674dde/examples/peripheral/PCA9685_nRF52_example/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/boards/pca10056.h" selected="0" top="115" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="pca9685_pca10056" fileDialogDefaultFilter="*" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/gatran/Documents/ble-media/nRF5_SDK_17.0.2_d674dde/examples/peripheral/PCA9685_nRF52_example" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <ARMCrossStudioWindow activeProject="pca9685_pca10056" fileDialogDefaultFilter="*" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/gatran/Documents/ble-media/nRF5_SDK_17.0.2_d674dde/examples/peripheral/PCA9685_nRF52_example" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

@@ -61,6 +61,7 @@
 #include "nrf_log_default_backends.h"
 
 #include "pca9685.h"
+#include "ltc2497.h"
 
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
@@ -73,14 +74,23 @@
 /* Indicates if operation on TWI has ended. */
 static volatile bool m_xfer_done = true;
 
+static uint16_t m_voltage_count = 0;
+
+static int32_t m_raw_adc;
 static uint32_t m_previous_tick = 0;
 static uint32_t m_timer_tick = 0;
+
+static float m_voltage;
+
+static float m_voltage_data[512];
 
 /* TWI instance. */
 static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 static const nrf_drv_timer_t m_timer = NRF_DRV_TIMER_INSTANCE(TIMER_INSTANCE_ID);
 
 static PCA9685_Def_t m_pca9685;
+static LTC2497_Def_t m_ltc2497;
+static LTC2497_Channel_Config_Def_t m_ltc2497_channel_config;
 
 /**
  * @brief TWI events handler.
@@ -124,7 +134,6 @@ void timer_event_handler(nrf_timer_event_t event_type, void* p_context)
 static PCA9685_I2C_Handle_t pca9685_comm_handle(PCA9685_I2C_Event_t locCommEvent_en, uint16_t device_address, uint8_t register_address, uint8_t *data, uint16_t data_size, void *p_context)
 {
     ret_code_t err_code;
-
 
     switch (locCommEvent_en)
     {
@@ -183,7 +192,76 @@ static PCA9685_I2C_Handle_t pca9685_comm_handle(PCA9685_I2C_Event_t locCommEvent
 }
 
 
+static LTC2497_I2C_Handle_t ltc2497_comm_handle(LTC2497_I2C_Event_t locCommEvent_en, uint16_t device_address, uint8_t register_address, uint8_t *data, uint16_t data_size, void *p_context)
+{
+    ret_code_t err_code;
+
+    switch (locCommEvent_en)
+    {
+        case LTC2497_I2C_EVENT_TRANSMIT:
+        {
+#if TWMI_USE_DMA            
+            if (false == m_xfer_done)
+            {
+                return (LTC2497_I2C_Handle_t)LTC2497_BUSY;
+            }
+            m_xfer_done = false;
+#endif
+            err_code = nrf_drv_twi_tx(&m_twi, device_address, data, data_size, false);
+            APP_ERROR_CHECK(err_code);
+#if TWMI_USE_DMA            
+            while (false == m_xfer_done) { };
+#endif
+            break;
+        }
+
+        case LTC2497_I2C_EVENT_RECEIVE:
+        {
+            uint8_t write_data;
+
+            write_data = register_address;
+#if TWMI_USE_DMA            
+            if (false == m_xfer_done)
+            {
+                return (LTC2497_I2C_Handle_t)LTC2497_BUSY;
+            }
+            m_xfer_done = false;
+#endif
+            err_code = nrf_drv_twi_tx(&m_twi, device_address, &write_data, 1, true);
+
+            if (NRF_SUCCESS != err_code)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+#if TWMI_USE_DMA            
+            while (false == m_xfer_done) { };
+            m_xfer_done = false;
+#endif
+            err_code = nrf_drv_twi_rx(&m_twi, device_address, data, data_size);
+            if (NRF_SUCCESS != err_code)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+#if TWMI_USE_DMA            
+            while (false == m_xfer_done) { };
+#endif
+            break;
+        }
+
+        default: break;
+    }
+
+    return (LTC2497_I2C_Handle_t)err_code;
+}
+
+
 static PCA9685_Delay_Handle_t pca9685_delay_handle(uint32_t locDelayPeriodMS_u32)
+{
+    nrf_delay_ms(locDelayPeriodMS_u32);
+}
+
+
+static LTC2497_Delay_Handle_t ltc2497_delay_handle(uint32_t locDelayPeriodMS_u32)
 {
     nrf_delay_ms(locDelayPeriodMS_u32);
 }
@@ -270,6 +348,24 @@ static void pca9685_init(void)
 }
 
 
+static void ltc2497_init(void)
+{
+    nrf_gpio_cfg_output(ARDUINO_10_PIN);
+    nrf_gpio_pin_clear(ARDUINO_10_PIN);
+
+    m_ltc2497.deviceAddress = 0x56;
+    m_ltc2497.refVoltage = 2.048;
+    m_ltc2497.i2cHandle = (LTC2497_I2C_Handle_t)ltc2497_comm_handle;
+    m_ltc2497.delayHandle = (LTC2497_Delay_Handle_t)ltc2497_delay_handle;
+
+    APP_ERROR_CHECK(LTC2497_Init(&m_ltc2497));
+
+    m_ltc2497_channel_config.channgelEnabled = CHANNEL_ENABLED;
+    m_ltc2497_channel_config.differentialChannelEnabled = DIFFERENTIAL_INPUT_ENABLED;
+    m_ltc2497_channel_config.oddInputEnabled = 0;
+}
+
+
 /**
  * @brief Function for main application entry.
  */
@@ -282,16 +378,22 @@ int main(void)
     timer_init();
     twi_init();
     pca9685_init();
+    ltc2497_init();
 
     NRF_LOG_INFO("nRF52 + PCA9685 example started.\r\n");
     NRF_LOG_FLUSH();
     
     while (true)
     {
-        if (((uint32_t)m_timer_tick - m_previous_tick) >= 50)
+        if (((uint32_t)m_timer_tick - m_previous_tick) >= 150)
         {
-            light_value = (light_value + 35) % 4095;
+            light_value = (light_value + 32) % 4095;
             APP_ERROR_CHECK(PCA9685_SetLEDActiveTime(&m_pca9685, PCA9685_ALL_LED, light_value));
+            APP_ERROR_CHECK(LTC2497_ReadChannelADC(&m_ltc2497, m_ltc2497_channel_config, 4, &m_raw_adc));
+            APP_ERROR_CHECK(LTC2497_ConvertRawADC2Voltage(&m_ltc2497, m_raw_adc, &m_voltage));
+
+            m_voltage_data[m_voltage_count] = m_voltage;
+            m_voltage_count = (m_voltage_count + 1) % 512;
 
             m_previous_tick = m_timer_tick;
         }

@@ -1,0 +1,1 @@
+Please use from [peripheral-drivers\PCA9685\PCA9685_nRF52_example](https://github.com/DuyTrandeLion/peripheral-drivers/tree/master/PCA9685/PCA9685_nRF52_example) example as it is integrated with the LTC2497.

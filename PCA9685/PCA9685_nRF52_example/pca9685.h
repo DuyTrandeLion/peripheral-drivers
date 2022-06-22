@@ -72,7 +72,7 @@ typedef enum
 /**
  * I2C event callback type.
  *
- * This function is called when there is SPI communication.
+ * This function is called when there is I2C communication.
  *
  * @param[in] PCA9685_I2C_Event_t 	I2C Event type.
  * @param[in] uint8_t                   I2C address of the peripheral
@@ -91,6 +91,10 @@ typedef PCA9685_State_t (*PCA9685_I2C_Handle_t)(PCA9685_I2C_Event_t locCommEvent
                                                 void *locContext_p);
 
 
+/**
+ * Delay handler.
+ *
+ */
 typedef void (*PCA9685_Delay_Handle_t)(uint32_t locDelayPeriodMS_u32);
 
 

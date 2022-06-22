@@ -72,6 +72,10 @@
     |---------|---------|
     |**PCA9685**|**x**|
 
+    |LTC2497|Tested|
+    |---------|---------|
+    |**LTC2497**|**x**|
+
 # Usage
 1. Clone the repository and submodules:
     ```bash
