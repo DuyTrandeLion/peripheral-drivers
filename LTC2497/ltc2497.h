@@ -1,5 +1,5 @@
 /*
- * pca9685.h
+ * ltc2497.h
  *
  *  Created on: Jun 6, 2022
  *      Author: Duy Lion Tran (Gabriel)
@@ -84,7 +84,7 @@ typedef void (*LTC2497_Delay_Handle_t)(uint32_t locDelayPeriodMS_u32);
 /** ADC channel configuration structure.  */
 typedef struct
 {
-    uint8_t channgelEnabled;
+    uint8_t channelEnabled;
     uint8_t differentialChannelEnabled;
     uint8_t oddInputEnabled;
 } LTC2497_Channel_Config_Def_t;
@@ -140,7 +140,7 @@ LTC2497_State_t LTC2497_ReadChannelADC(LTC2497_Def_t *locLTC2497_p, LTC2497_Chan
  * @param[out] 	locVoltage_p		Pointer to result voltage.
  *
  */
-void LTC2497_State_t LTC2497_ConvertRawADC2Voltage(LTC2497_Def_t *locLTC2497_p, uint32_t locRawADC_i32, float *locVoltage_fp);
+LTC2497_State_t LTC2497_ConvertRawADC2Voltage(LTC2497_Def_t *locLTC2497_p, uint32_t locRawADC_i32, float *locVoltage_fp);
 
 
 #ifdef __cplusplus

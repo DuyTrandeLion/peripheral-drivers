@@ -26,6 +26,8 @@ LTC2497_State_t LTC2497_Init(LTC2497_Def_t *locLTC2497_p)
 
     locRet = locLTC2497_p->i2cHandle(LTC2497_I2C_EVENT_TRANSMIT, locLTC2497_p->deviceAddress, 0x00, &locData_u8, 1, NULL);
     locLTC2497_p->delayHandle(200);
+
+    return LTC2497_OK;
 }
 
 
@@ -44,9 +46,9 @@ LTC2497_State_t LTC2497_ReadChannelADC(LTC2497_Def_t *locLTC2497_p, LTC2497_Chan
 
     locChannelConfigData_u8 = 0x80;
     locChannelConfigData_u8 |= locChannelIndex_u8;
-    if (CHANNEL_ENABLED == locChannelConfig_s.channgelEnabled)
+    if (CHANNEL_ENABLED == locChannelConfig_s.channelEnabled)
     {
-        locChannelConfigData_u8 |= locChannelConfig_s.channgelEnabled;
+        locChannelConfigData_u8 |= locChannelConfig_s.channelEnabled;
     }
     if (DIFFERENTIAL_INPUT_ENABLED == locChannelConfig_s.differentialChannelEnabled)
     {
@@ -103,7 +105,3 @@ LTC2497_State_t LTC2497_ConvertRawADC2Voltage(LTC2497_Def_t *locLTC2497_p, uint3
 #ifdef __cplusplus
 }
 #endif
-
-
-
-
